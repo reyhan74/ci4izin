@@ -7,7 +7,7 @@
             
             <div class="mb-4 d-flex align-items-center">
                 <a href="<?= site_url('admin/siswa') ?>" class="btn btn-dark btn-sm rounded-3 me-3 bg-opacity-10 border-secondary">
-                    <i class="bi bi-arrow-left"></i>
+                    <i class="bi bi-arrow-left text-dark"></i>
                 </a>
                 <div>
                     <h3 class="fw-bold text-dark mb-0">Tambah Siswa Baru</h3>
@@ -55,13 +55,54 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label text-muted small fw-bold text-uppercase">Kelas</label>
-                                        <input type="text" name="kelas" class="form-control modern-input" 
-                                               placeholder="Contoh: XII" required>
+                                        <select name="kelas" class="form-select modern-input" required>
+                                            <option value="" selected disabled>Pilih Kelas</option>
+                                            <option value="X">X (Sepuluh)</option>
+                                            <option value="XI">XI (Sebelas)</option>
+                                            <option value="XII">XII (Duabelas)</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label text-muted small fw-bold text-uppercase">Jurusan</label>
-                                        <input type="text" name="jurusan" class="form-control modern-input" 
-                                               placeholder="Contoh: RPL" required>
+                                        <select name="jurusan" class="form-select modern-input" required>
+                                            <option value="" selected disabled>Pilih Jurusan</option>
+                                            
+                                            <optgroup label="Teknik Komputer & Jaringan">
+                                                <option value="TKJ 1">TKJ 1</option>
+                                                <option value="TKJ 2">TKJ 2</option>
+                                                <option value="TKJ 3">TKJ 3</option>
+                                            </optgroup>
+
+                                            <optgroup label="Teknik Otomasi Industri">
+                                                <option value="TOI 1">TOI 1</option>
+                                                <option value="TOI 2">TOI 2</option>
+                                            </optgroup>
+
+                                            <optgroup label="Teknik Pemesinan">
+                                                <option value="TPM 1">TPM 1</option>
+                                                <option value="TPM 2">TPM 2</option>
+                                                <option value="TPM 3">TPM 3</option>
+                                                <option value="TPM 4">TPM 4</option>
+                                                <option value="TPM 5">TPM 5</option>
+                                            </optgroup>
+
+                                            <optgroup label="Teknik Kendaraan Ringan">
+                                                <option value="TKR 1">TKR 1</option>
+                                                <option value="TKR 2">TKR 2</option>
+                                                <option value="TKR 3">TKR 3</option>
+                                            </optgroup>
+
+                                            <optgroup label="Teknik Instalasi Tenaga Listrik">
+                                                <option value="TITL 1">TITL 1</option>
+                                                <option value="TITL 2">TITL 2</option>
+                                                <option value="TITL 3">TITL 3</option>
+                                            </optgroup>
+
+                                            <optgroup label="Desain Pemodelan & Informasi Bangunan">
+                                                <option value="DPIB 1">DPIB 1</option>
+                                                <option value="DPIB 2">DPIB 2</option>
+                                            </optgroup>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -86,7 +127,7 @@
 </div>
 
 <style>
-    /* Styling Input Modern */
+    /* Styling Input & Select Modern */
     .modern-input {
         background: #f8fafc !important;
         border: 2px solid #f1f5f9 !important;
@@ -94,12 +135,35 @@
         padding: 12px 15px;
         transition: all 0.3s ease;
         font-size: 0.95rem;
+        color: #334155;
     }
 
     .modern-input:focus {
         background: #fff !important;
         border-color: #4361ee !important;
         box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1) !important;
+    }
+
+    /* Khusus untuk Dropdown Select agar tampil seragam */
+    select.modern-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 1rem center !important;
+        background-size: 16px 12px !important;
+    }
+
+    optgroup {
+        font-size: 0.85rem;
+        color: #4361ee;
+        font-weight: 700;
+        background: #fff;
+    }
+
+    option {
+        color: #334155;
+        font-weight: normal;
+        padding: 10px;
     }
 
     .input-group-text {
@@ -113,28 +177,18 @@
     }
 
     /* Card Shadow & Radius */
-    .card {
-        border-radius: 24px;
-    }
+    .card { border-radius: 24px; }
 
     /* Button Style */
-    .btn-primary {
-        background-color: #4361ee;
-        border: none;
-    }
-    .btn-primary:hover {
-        background-color: #3751d4;
-        transform: translateY(-1px);
-    }
+    .btn-primary { background-color: #4361ee; border: none; }
+    .btn-primary:hover { background-color: #3751d4; transform: translateY(-1px); }
 </style>
 
 <script>
-    // SweetAlert Intergration
     document.getElementById('tambahSiswaForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const form = this;
 
-        // Validasi Sederhana
         if (!form.checkValidity()) {
             form.reportValidity();
             return;
@@ -155,7 +209,6 @@
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                // Tampilkan Loading (Sangat penting karena generator QR butuh waktu)
                 Swal.fire({
                     title: 'Sedang Memproses',
                     text: 'Menyimpan data dan membuat QR Code...',

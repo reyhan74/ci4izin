@@ -19,6 +19,8 @@ $routes->get('/logout', 'Auth::logout');
 $routes->get('/', 'Izin::index');
 // $routes->get('scan', 'Izin::index');
 $routes->post('scan/store', 'Izin::store');
+// Pastikan baris ini ada agar form POST bisa diterima
+$routes->post('izin/process', 'Izin::process');
 $routes->get('izin/riwayat', 'Izin::riwayat');
 
 // =======================
@@ -59,12 +61,15 @@ $routes->group('admin', ['filter' => 'auth:admin'], function ($routes) {
     // =======================
     $routes->get('walikelas', 'Admin\WaliKelas::index');
     $routes->post('walikelas/store', 'Admin\WaliKelas::store');
+    $routes->post('walikelas/update/(:num)', 'Admin\WaliKelas::update/$1');
+    $routes->get('walikelas/delete/(:num)', 'Admin\WaliKelas::delete/$1');
 
     // =======================
     // IZIN & LAPORAN
     // =======================
     $routes->get('riwayat', 'Admin\Izin::index');
     $routes->get('laporan-izin', 'Admin\LaporanIzin::index');
+    $routes->get('laporan-izin/export', 'Admin\LaporanIzin::exportExcel');
 });
 
 

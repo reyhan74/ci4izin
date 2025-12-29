@@ -54,13 +54,54 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label text-muted small fw-bold text-uppercase">Kelas</label>
-                                    <input type="text" name="kelas" class="form-control modern-input" 
-                                           value="<?= esc($siswa['kelas']) ?>" required placeholder="Contoh: XII">
+                                    <select name="kelas" class="form-select modern-input" required>
+                                        <option value="" disabled>Pilih Kelas</option>
+                                        <option value="X" <?= ($siswa['kelas'] == 'X') ? 'selected' : '' ?>>X (Sepuluh)</option>
+                                        <option value="XI" <?= ($siswa['kelas'] == 'XI') ? 'selected' : '' ?>>XI (Sebelas)</option>
+                                        <option value="XII" <?= ($siswa['kelas'] == 'XII') ? 'selected' : '' ?>>XII (Duabelas)</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label text-muted small fw-bold text-uppercase">Jurusan</label>
-                                    <input type="text" name="jurusan" class="form-control modern-input" 
-                                           value="<?= esc($siswa['jurusan']) ?>" required placeholder="Contoh: RPL">
+                                    <select name="jurusan" class="form-select modern-input" required>
+                                        <option value="" disabled>Pilih Jurusan</option>
+                                        
+                                        <optgroup label="Teknik Komputer & Jaringan">
+                                            <?php for($i=1; $i<=3; $i++): ?>
+                                                <option value="TKJ <?= $i ?>" <?= ($siswa['jurusan'] == "TKJ $i") ? 'selected' : '' ?>>TKJ <?= $i ?></option>
+                                            <?php endfor; ?>
+                                        </optgroup>
+
+                                        <optgroup label="Teknik Otomasi Industri">
+                                            <?php for($i=1; $i<=2; $i++): ?>
+                                                <option value="TOI <?= $i ?>" <?= ($siswa['jurusan'] == "TOI $i") ? 'selected' : '' ?>>TOI <?= $i ?></option>
+                                            <?php endfor; ?>
+                                        </optgroup>
+
+                                        <optgroup label="Teknik Pemesinan">
+                                            <?php for($i=1; $i<=5; $i++): ?>
+                                                <option value="TPM <?= $i ?>" <?= ($siswa['jurusan'] == "TPM $i") ? 'selected' : '' ?>>TPM <?= $i ?></option>
+                                            <?php endfor; ?>
+                                        </optgroup>
+
+                                        <optgroup label="Teknik Kendaraan Ringan">
+                                            <?php for($i=1; $i<=3; $i++): ?>
+                                                <option value="TKR <?= $i ?>" <?= ($siswa['jurusan'] == "TKR $i") ? 'selected' : '' ?>>TKR <?= $i ?></option>
+                                            <?php endfor; ?>
+                                        </optgroup>
+
+                                        <optgroup label="Teknik Instalasi Tenaga Listrik">
+                                            <?php for($i=1; $i<=3; $i++): ?>
+                                                <option value="TITL <?= $i ?>" <?= ($siswa['jurusan'] == "TITL $i") ? 'selected' : '' ?>>TITL <?= $i ?></option>
+                                            <?php endfor; ?>
+                                        </optgroup>
+
+                                        <optgroup label="Desain Pemodelan & Informasi Bangunan">
+                                            <?php for($i=1; $i<=2; $i++): ?>
+                                                <option value="DPIB <?= $i ?>" <?= ($siswa['jurusan'] == "DPIB $i") ? 'selected' : '' ?>>DPIB <?= $i ?></option>
+                                            <?php endfor; ?>
+                                        </optgroup>
+                                    </select>
                                 </div>
                             </div>
 
@@ -89,12 +130,29 @@
         border-radius: 12px;
         padding: 12px 15px;
         transition: all 0.3s ease;
+        color: #334155;
     }
 
     .modern-input:focus {
         background: #fff !important;
         border-color: #4361ee !important;
         box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1) !important;
+    }
+
+    /* Styling khusus Select agar arrow seragam */
+    select.modern-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 1rem center !important;
+        background-size: 16px 12px !important;
+    }
+
+    optgroup {
+        font-weight: 700;
+        color: #4361ee;
+        font-style: normal;
+        background: #fff;
     }
 
     .card { border-radius: 24px; }
@@ -121,7 +179,6 @@
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                // Tampilkan Loading
                 Swal.fire({
                     title: 'Memproses...',
                     text: 'Sedang memperbarui data siswa',
