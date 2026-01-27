@@ -1,226 +1,191 @@
-<?= $this->extend('layout/admin') ?>
-<?= $this->section('content') ?>
+<?= $this->extend('layout/admin'); ?>
 
-<div class="container-fluid animate__animated animate__fadeIn">
-    <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8">
-            
-            <div class="mb-4 d-flex align-items-center">
-                <a href="<?= site_url('admin/siswa') ?>" class="btn btn-dark btn-sm rounded-3 me-3 bg-opacity-10 border-secondary">
-                    <i class="bi bi-arrow-left text-dark"></i>
-                </a>
-                <div>
-                    <h3 class="fw-bold text-dark mb-0">Tambah Siswa Baru</h3>
-                    <p class="text-muted small mb-0">Daftarkan data siswa ke dalam sistem E-Presensi.</p>
-                </div>
+<?= $this->section('content'); ?>
+<div class="container-fluid py-4">
+
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800 font-weight-bold"><?= $title; ?></h1>
+                <p class="text-muted small mb-0">Silakan isi formulir di bawah ini dengan data yang benar.</p>
             </div>
+            <a href="/admin/siswa" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="fas fa-arrow-left mr-1"></i> Kembali ke Daftar
+            </a>
+        </div>
+    </div>
 
-            <div class="card border-0 shadow-lg" style="border-radius: 20px; background: white;">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <div class="card shadow-sm border-0">
+                <div style="height: 5px; background: #4e73df; border-radius: 5px 5px 0 0;"></div>
+                
                 <div class="card-body p-4 p-md-5">
-                    <form action="<?= site_url('admin/siswa/store') ?>" method="post" id="tambahSiswaForm">
-                        <?= csrf_field() ?>
+                    <form action="/admin/siswa/saveSiswa" method="post" enctype="multipart/form-data">
+                        <?= csrf_field(); ?>
 
                         <div class="row">
-                            <div class="col-md-4 mb-4 mb-md-0 border-end">
-                                <div class="p-3 rounded-4 bg-primary bg-opacity-10 border border-primary border-opacity-25">
-                                    <h6 class="text-primary fw-bold mb-2"><i class="bi bi-info-circle me-2"></i>Informasi</h6>
-                                    <p class="text-muted small mb-0" style="line-height: 1.6;">
-                                        Pastikan <strong>NIS</strong> unik. Sistem akan men-generate <strong>QR Code</strong> unik untuk setiap siswa setelah data berhasil disimpan.
-                                    </p>
-                                </div>
-                                <div class="mt-4 text-center d-none d-md-block opacity-25">
-                                    <i class="bi bi-person-plus text-primary" style="font-size: 5rem;"></i>
-                                </div>
-                            </div>
-
-                            <div class="col-md-8 ps-md-4">
+                            <div class="col-lg-8 border-right-lg">
+                                <h5 class="text-primary font-weight-bold mb-4">Informasi Pribadi</h5>
                                 
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small fw-bold text-uppercase">Nomor Induk Siswa (NIS)</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">
-                                            <i class="bi bi-card-text text-primary"></i>
-                                        </span>
-                                        <input type="text" name="nis" class="form-control modern-input" 
-                                               placeholder="Contoh: 222310101" required autofocus>
+                                <div class="row">
+                                    <div class="col-md-6 form-group mb-4">
+                                        <label class="text-dark font-weight-bold">Nomor Induk Siswa (NIS)</label>
+                                        <input type="text" class="form-control form-control-user <?= (validation_show_error('nis')) ? 'is-invalid' : ''; ?>" 
+                                               name="nis" value="<?= old('nis'); ?>" placeholder="Masukkan NIS">
+                                        <div class="invalid-feedback"><?= validation_show_error('nis'); ?></div>
                                     </div>
-                                </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small fw-bold text-uppercase">Nama Lengkap</label>
-                                    <input type="text" name="nama" class="form-control modern-input" 
-                                           placeholder="Nama lengkap siswa" required>
+                                    <div class="col-md-6 form-group mb-4">
+                                        <label class="text-dark font-weight-bold">Nama Lengkap</label>
+                                        <input type="text" class="form-control <?= (validation_show_error('nama')) ? 'is-invalid' : ''; ?>" 
+                                               name="nama" value="<?= old('nama'); ?>" placeholder="Nama sesuai ijazah">
+                                        <div class="invalid-feedback"><?= validation_show_error('nama'); ?></div>
+                                    </div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small fw-bold text-uppercase">Kelas</label>
-                                        <select name="kelas" class="form-select modern-input" required>
-                                            <option value="" selected disabled>Pilih Kelas</option>
-                                            <option value="X">X (Sepuluh)</option>
-                                            <option value="XI">XI (Sebelas)</option>
-                                            <option value="XII">XII (Duabelas)</option>
+                                    <div class="col-md-6 form-group mb-4">
+                                        <label class="text-dark font-weight-bold">Kelas & Jurusan</label>
+                                        <select class="custom-select <?= (validation_show_error('id_kelas')) ? 'is-invalid' : ''; ?>" name="id_kelas">
+                                            <option value="" selected disabled>-- Pilih Kelas --</option>
+                                            <?php foreach ($kelas as $k) : ?>
+                                                <option value="<?= $k['id_kelas']; ?>" <?= old('id_kelas') == $k['id_kelas'] ? 'selected' : ''; ?>>
+                                                    <?= $k['kelas']; ?> - <?= $k['jurusan']; ?>
+                                                </option>
+                                            <?php endforeach; ?>
                                         </select>
+                                        <div class="invalid-feedback"><?= validation_show_error('id_kelas'); ?></div>
                                     </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label text-muted small fw-bold text-uppercase">Jurusan</label>
-                                        <select name="jurusan" class="form-select modern-input" required>
-                                            <option value="" selected disabled>Pilih Jurusan</option>
-                                            
-                                            <optgroup label="Teknik Komputer & Jaringan">
-                                                <option value="TKJ 1">TKJ 1</option>
-                                                <option value="TKJ 2">TKJ 2</option>
-                                                <option value="TKJ 3">TKJ 3</option>
-                                            </optgroup>
 
-                                            <optgroup label="Teknik Otomasi Industri">
-                                                <option value="TOI 1">TOI 1</option>
-                                                <option value="TOI 2">TOI 2</option>
-                                            </optgroup>
-
-                                            <optgroup label="Teknik Pemesinan">
-                                                <option value="TPM 1">TPM 1</option>
-                                                <option value="TPM 2">TPM 2</option>
-                                                <option value="TPM 3">TPM 3</option>
-                                                <option value="TPM 4">TPM 4</option>
-                                                <option value="TPM 5">TPM 5</option>
-                                            </optgroup>
-
-                                            <optgroup label="Teknik Kendaraan Ringan">
-                                                <option value="TKR 1">TKR 1</option>
-                                                <option value="TKR 2">TKR 2</option>
-                                                <option value="TKR 3">TKR 3</option>
-                                            </optgroup>
-
-                                            <optgroup label="Teknik Instalasi Tenaga Listrik">
-                                                <option value="TITL 1">TITL 1</option>
-                                                <option value="TITL 2">TITL 2</option>
-                                                <option value="TITL 3">TITL 3</option>
-                                            </optgroup>
-
-                                            <optgroup label="Desain Pemodelan & Informasi Bangunan">
-                                                <option value="DPIB 1">DPIB 1</option>
-                                                <option value="DPIB 2">DPIB 2</option>
-                                            </optgroup>
-                                        </select>
+                                    <div class="col-md-6">
+                           <label for="jk">Jenis Kelamin</label>
+                           <?php
+                           if (old('jk')) {
+                              $l = (old('jk') ?? $oldInput['jk']) == '1' ? 'checked' : '';
+                              $p = (old('jk') ?? $oldInput['jk']) == '2' ? 'checked' : '';
+                           }
+                           ?>
+                           <div class="form-check form-control pt-0 mb-1 <?= $validation->getError('jk') ? 'is-invalid' : ''; ?>" id="jk">
+                              <div class="row">
+                                 <div class="col-auto">
+                                    <div class="row">
+                                       <div class="col-auto pr-1">
+                                          <input class="form-check" type="radio" name="jk" id="laki" value="1" <?= $l ?? ''; ?>>
+                                       </div>
+                                       <div class="col">
+                                          <label class="form-check-label pl-0 pt-1" for="laki">
+                                             <h6 class="text-dark">Laki-laki</h6>
+                                          </label>
+                                       </div>
                                     </div>
+                                 </div>
+                                 <div class="col">
+                                    <div class="row">
+                                       <div class="col-auto pr-1">
+                                          <input class="form-check" type="radio" name="jk" id="perempuan" value="2" <?= $p ?? ''; ?>>
+                                       </div>
+                                       <div class="col">
+                                          <label class="form-check-label pl-0 pt-1" for="perempuan">
+                                             <h6 class="text-dark">Perempuan</h6>
+                                          </label>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="invalid-feedback">
+                              <?= $validation->getError('jk'); ?>
+                           </div>
+                        </div>
                                 </div>
 
-                                <hr class="my-4 opacity-10">
-
-                                <div class="d-flex justify-content-end gap-2">
-                                    <a href="<?= site_url('admin/siswa') ?>" class="btn btn-light rounded-pill px-4 border">
-                                        Batal
-                                    </a>
-                                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
-                                        <i class="bi bi-check-lg me-2"></i>Simpan Data
-                                    </button>
+                                <div class="form-group mb-4">
+                                    <label class="text-dark font-weight-bold">Nomor WhatsApp/HP</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-light">+62</span>
+                                        </div>
+                                        <input type="text" class="form-control" name="no_hp" value="<?= old('no_hp'); ?>" placeholder="8123456789">
+                                    </div>
                                 </div>
                             </div>
+
+                            <div class="col-lg-4 mt-4 mt-lg-0">
+                                <h5 class="text-primary font-weight-bold mb-4 text-center text-lg-left">Foto Profil</h5>
+                                
+                                <div class="text-center bg-light p-4 rounded border">
+                                    <div class="mb-3">
+                                        <div class="mx-auto shadow-sm border bg-white" 
+                                             style="width: 160px; height: 200px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px;">
+                                            <img src="" id="img-preview" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                            <span id="placeholder-text" class="text-muted small px-2">Preview Foto</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="custom-file mt-2">
+                                        <input type="file" class="custom-file-input <?= (validation_show_error('foto')) ? 'is-invalid' : ''; ?>" 
+                                               id="foto-siswa" name="foto" onchange="previewImage()">
+                                        <label class="custom-file-label text-left overflow-hidden" for="foto-siswa">Pilih File</label>
+                                        <div class="invalid-feedback text-left"><?= validation_show_error('foto'); ?></div>
+                                    </div>
+                                    <ul class="text-left mt-3 text-muted small pl-3">
+                                        <li>Format: JPG, JPEG, PNG</li>
+                                        <li>Ukuran Maks: 2 MB</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-end">
+                            <button type="reset" class="btn btn-light px-4 mr-2">Reset</button>
+                            <button type="submit" class="btn btn-primary px-5 font-weight-bold">
+                                <i class="fas fa-check-circle mr-2"></i> Simpan Data Siswa
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
-<style>
-    /* Styling Input & Select Modern */
-    .modern-input {
-        background: #f8fafc !important;
-        border: 2px solid #f1f5f9 !important;
-        border-radius: 12px;
-        padding: 12px 15px;
-        transition: all 0.3s ease;
-        font-size: 0.95rem;
-        color: #334155;
-    }
-
-    .modern-input:focus {
-        background: #fff !important;
-        border-color: #4361ee !important;
-        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1) !important;
-    }
-
-    /* Khusus untuk Dropdown Select agar tampil seragam */
-    select.modern-input {
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
-        background-repeat: no-repeat !important;
-        background-position: right 1rem center !important;
-        background-size: 16px 12px !important;
-    }
-
-    optgroup {
-        font-size: 0.85rem;
-        color: #4361ee;
-        font-weight: 700;
-        background: #fff;
-    }
-
-    option {
-        color: #334155;
-        font-weight: normal;
-        padding: 10px;
-    }
-
-    .input-group-text {
-        border-radius: 12px 0 0 12px !important;
-        border: 2px solid #f1f5f9 !important;
-        border-right: none !important;
-    }
-
-    .input-group .modern-input {
-        border-radius: 0 12px 12px 0 !important;
-    }
-
-    /* Card Shadow & Radius */
-    .card { border-radius: 24px; }
-
-    /* Button Style */
-    .btn-primary { background-color: #4361ee; border: none; }
-    .btn-primary:hover { background-color: #3751d4; transform: translateY(-1px); }
-</style>
-
 <script>
-    document.getElementById('tambahSiswaForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const form = this;
+    function previewImage() {
+        const foto = document.querySelector('#foto-siswa');
+        const imgPreview = document.querySelector('#img-preview');
+        const placeholder = document.querySelector('#placeholder-text');
+        const fileLabel = document.querySelector('.custom-file-label');
 
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
+        fileLabel.textContent = foto.files[0].name;
+
+        const fileFoto = new FileReader();
+        fileFoto.readAsDataURL(foto.files[0]);
+
+        fileFoto.onload = function(e) {
+            imgPreview.style.display = 'block';
+            placeholder.style.display = 'none';
+            imgPreview.src = e.target.result;
         }
-
-        Swal.fire({
-            title: 'Simpan Siswa?',
-            text: "Data akan segera didaftarkan ke sistem.",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#4361ee',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Ya, Simpan!',
-            cancelButtonText: 'Batal',
-            reverseButtons: true,
-            customClass: {
-                popup: 'rounded-4 shadow'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Sedang Memproses',
-                    text: 'Menyimpan data dan membuat QR Code...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                form.submit();
-            }
-        });
-    });
+    }
 </script>
 
-<?= $this->endSection() ?>
+<style>
+    /* Tambahan CSS untuk responsivitas */
+    @media (min-width: 992px) {
+        .border-right-lg {
+            border-right: 1px solid #e3e6f0;
+            padding-right: 2rem;
+        }
+    }
+    .custom-file-label::after {
+        content: "Cari";
+    }
+    .form-control:focus, .custom-select:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.1);
+    }
+</style>
+<?= $this->endSection(); ?>

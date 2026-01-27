@@ -9,45 +9,52 @@ use CodeIgniter\Router\RouteCollection;
 // =======================
 // AUTH
 // =======================
-$routes->get('/login', 'Auth::login');
-$routes->post('/login', 'Auth::attempt');
-$routes->get('/logout', 'Auth::logout');
+$routes->get('login', 'Auth::login');
+$routes->post('auth/attempt', 'Auth::attempt');
+$routes->get('logout', 'Auth::logout');
 
 // =======================
 // PUBLIC (SCAN IZIN)
 // =======================
 $routes->get('/', 'Izin::index');
-// $routes->get('scan', 'Izin::index');
 $routes->post('scan/store', 'Izin::store');
-// Pastikan baris ini ada agar form POST bisa diterima
 $routes->post('izin/process', 'Izin::process');
 $routes->get('izin/riwayat', 'Izin::riwayat');
 
 // =======================
 // ADMIN AREA
 // =======================
-$routes->group('admin', ['filter' => 'auth:admin'], function ($routes) {
-
-    // DASHBOARD
+// Namespace diarahkan ke App\Controllers\Admin agar lebih rapi
+$routes->group('admin', ['filter' => 'authadmin'], function($routes) {
+    
+    // Dashboard Admin (Opsional jika ada)
     $routes->get('dashboard', 'Admin\Dashboard::index');
 
-    // =======================
-    // SISWA
-    // =======================
+    // --- MANAJEMEN SISWA ---
+    $routes->get('settings', 'Admin\Settings::index');
+    $routes->post('settings/profile', 'Admin\Settings::updateProfile');
+    $routes->post('settings/password', 'Admin\Settings::updatePassword');
+
+        
+    // 1. Letakkan rute statis di atas rute dengan parameter (:any)
+    $routes->get('siswa/downloadTemplate', 'Admin\Siswa::downloadTemplate'); // PERBAIKAN: Hapus 'Admin\'
+    $routes->post('siswa/import', 'Admin\Siswa::import'); // PERBAIKAN: Hapus 'Admin\'
+    
+    // 2. Rute utama dan tambah
     $routes->get('siswa', 'Admin\Siswa::index');
     $routes->get('siswa/create', 'Admin\Siswa::create');
-    $routes->post('siswa/store', 'Admin\Siswa::store');
-    $routes->get('siswa/edit/(:num)', 'Admin\Siswa::edit/$1');
-    $routes->post('siswa/update/(:num)', 'Admin\Siswa::update/$1');
-    $routes->get('siswa/delete/(:num)', 'Admin\Siswa::delete/$1');
-    $routes->get('siswa/show/(:num)', 'Admin\Siswa::show/$1');
-    $routes->get('siswa/download-template', 'Admin\Siswa::downloadTemplate');
-    $routes->post('siswa/import', 'Admin\Siswa::import');
-    $routes->get('siswa/cetak/(:num)', 'Admin\Siswa::cetak/$1');
+    $routes->post('siswa/saveSiswa', 'Admin\Siswa::saveSiswa');
+    
+    // 3. Rute dengan parameter (Selalu di bawah rute statis)
+    $routes->get('siswa/show/(:any)', 'Admin\Siswa::show/$1');
+    $routes->get('siswa/edit/(:any)', 'Admin\Siswa::edit/$1');
+    $routes->post('siswa/update/(:any)', 'Admin\Siswa::update/$1');
+    $routes->get('siswa/delete/(:any)', 'Admin\Siswa::delete/$1');
+    $routes->get('siswa/cetak_qr', 'Admin\Siswa::cetak_qr');
+    $routes->get('admin/siswa/cetak-qr-massal', 'Admin\Siswa::cetakSemuaQR');
 
-    // =======================
-    // USERS / GURU
-    // =======================
+
+    // USERS / GURU (Menggunakan UserController)
     $routes->get('users', 'Admin\UserController::index');
     $routes->get('users/create', 'Admin\UserController::create');
     $routes->post('users/store', 'Admin\UserController::store');
@@ -56,26 +63,68 @@ $routes->group('admin', ['filter' => 'auth:admin'], function ($routes) {
     $routes->get('users/delete/(:num)', 'Admin\UserController::delete/$1');
     $routes->get('users/show/(:num)', 'Admin\UserController::show/$1');
 
-    // =======================
-    // WALI KELAS
-    // =======================
+    // WALI KELAS (tb_walikelas)
     $routes->get('walikelas', 'Admin\WaliKelas::index');
     $routes->post('walikelas/store', 'Admin\WaliKelas::store');
     $routes->post('walikelas/update/(:num)', 'Admin\WaliKelas::update/$1');
     $routes->get('walikelas/delete/(:num)', 'Admin\WaliKelas::delete/$1');
 
-    // =======================
     // IZIN & LAPORAN
-    // =======================
     $routes->get('riwayat', 'Admin\Izin::index');
-    $routes->get('laporan-izin', 'Admin\LaporanIzin::index');
-    $routes->get('laporan-izin/export', 'Admin\LaporanIzin::exportExcel');
+    $routes->get('laporan', 'Admin\LaporanIzin::index');
+    $routes->get('laporan/export', 'Admin\LaporanIzin::exportExcel');
+});
+
+$routes->group('guru', ['filter' => 'authguru'], function($routes) {
+    $routes->get('dashboard', 'Guru\Dashboard::index');
+
+    // --- MANAJEMEN SISWA ---
+    $routes->get('settings', 'Guru\Settings::index');
+    $routes->post('settings/profile', 'Guru\Settings::updateProfile');
+    $routes->post('settings/password', 'Guru\Settings::updatePassword');
+
+        
+    // 1. Letakkan rute statis di atas rute dengan parameter (:any)
+    $routes->get('siswa/downloadTemplate', 'Guru\Siswa::downloadTemplate'); // PERBAIKAN: Hapus 'Admin\'
+    $routes->post('siswa/import', 'Guru\Siswa::import'); // PERBAIKAN: Hapus 'Admin\'
+    
+    // 2. Rute utama dan tambah
+    $routes->get('siswa', 'Guru\Siswa::index');
+    $routes->get('siswa/create', 'Guru\Siswa::create');
+    $routes->post('siswa/saveSiswa', 'Guru\Siswa::saveSiswa');
+    
+    // 3. Rute dengan parameter (Selalu di bawah rute statis)
+    $routes->get('siswa/show/(:any)', 'Guru\Siswa::show/$1');
+    $routes->get('siswa/edit/(:any)', 'Guru\Siswa::edit/$1');
+    $routes->post('siswa/update/(:any)', 'Guru\Siswa::update/$1');
+    $routes->get('siswa/delete/(:any)', 'Guru\Siswa::delete/$1');
+
+    // IZIN & LAPORAN
+    $routes->get('riwayat', 'Guru\Izin::index');
+    $routes->get('laporan', 'Guru\LaporanIzin::index');
+    $routes->get('laporan/export', 'Guru\LaporanIzin::exportExcel');
 });
 
 
-$routes->group('wali', ['filter' => 'auth:wali'], function ($routes) {
 
-    $routes->get('dashboard', 'Wali\Dashboard::index');
-    $routes->get('siswa', 'Wali\Siswa::index');
-    $routes->get('izin', 'Wali\Izin::index');
+$routes->get('login-siswa', 'LoginSiswa::index');
+$routes->post('loginsiswa/cekLogin', 'LoginSiswa::cekLogin');
+
+// --- Rute Dashboard Siswa (Setelah Login) ---
+$routes->group('siswa', ['filter' => 'authSiswa'], function($routes) {
+    $routes->get('dashboard', 'SiswaDashboard::index');
+    $routes->get('logout', 'LoginSiswa::logout');
+    $routes->get('dashboard', 'SiswaDashboard::index');
+    $routes->get('izin/excel', 'SiswaDashboard::exportExcel');
+    $routes->get('izin/pdf', 'SiswaDashboard::exportPdf');
+
+});
+
+// =======================
+// WALI AREA
+// =======================
+$routes->group('wali', ['namespace' => 'App\Controllers\Wali', 'filter' => 'auth:wali'], function ($routes) {
+    $routes->get('dashboard', 'Dashboard::index');
+    $routes->get('siswa', 'Siswa::index');
+    $routes->get('izin', 'Izin::index');
 });

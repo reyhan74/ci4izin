@@ -28,51 +28,58 @@
             flex-direction: column;
         }
 
-        /* FIX: Header untuk tombol Admin agar tidak menumpuk */
+        /* Navigasi Atas: Tombol Semua di Kanan */
         .top-nav {
             width: 100%;
             padding: 15px 20px;
             display: flex;
-            justify-content: flex-end; /* Memindahkan tombol ke kanan */
+            justify-content: flex-end; /* Memindahkan semua ke kanan */
+            align-items: center;
+            gap: 10px; /* Jarak antar tombol */
             position: absolute;
             top: 0;
-            left: 0;
+            right: 0;
             z-index: 1000;
         }
 
-        .btn-admin {
+        .btn-glass {
             background: rgba(255, 255, 255, 0.08); 
             backdrop-filter: blur(10px); 
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: white; 
-            padding: 8px 16px; 
+            padding: 8px 14px; 
             border-radius: 12px; 
             font-weight: 600; 
-            font-size: 0.8rem; 
+            font-size: 0.75rem; 
             text-decoration: none;
             display: flex; 
             align-items: center; 
-            gap: 8px; 
+            gap: 6px; 
             transition: 0.3s;
         }
-        .btn-admin:hover { background: rgba(255, 255, 255, 0.2); color: #fff; }
+        .btn-glass:hover { 
+            background: rgba(255, 255, 255, 0.2); 
+            color: #fff; 
+            transform: translateY(-2px); 
+        }
+        
+        .btn-siswa { border-bottom: 2px solid var(--success); }
+        .btn-admin { border-bottom: 2px solid var(--primary); }
 
-        /* Container utama agar card tetap di tengah */
         .main-container {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            margin-top: 40px; /* Memberi ruang agar tidak menabrak tombol admin di atas */
+            margin-top: 60px; 
         }
 
         .card-scan {
             width: 100%; 
             max-width: 400px; 
             background: rgba(255, 255, 255, 0.98); 
-            backdrop-filter: blur(20px);
             border-radius: 32px; 
             padding: 2rem 1.5rem; 
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -86,7 +93,7 @@
         .btn-status { 
             border: none; padding: 12px; border-radius: 14px; 
             font-weight: 700; font-size: 0.85rem; flex: 1; 
-            color: #64748b; background: transparent; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            color: #64748b; background: transparent; transition: 0.3s; 
         }
 
         .btn-status.active { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
@@ -96,17 +103,12 @@
         .form-control-custom {
             background: #f8fafc; border: 2px solid #e2e8f0;
             padding: 12px 16px; border-radius: 14px; font-weight: 500;
-            transition: 0.3s;
-        }
-        .form-control-custom:focus {
-            background: #fff; border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); outline: none;
         }
 
         .scanner-wrapper { 
             position: relative; border-radius: 24px; overflow: hidden; 
             background: #000; aspect-ratio: 1/1; margin-top: 1.5rem; 
-            border: 5px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 5px solid #fff;
         }
 
         .laser { 
@@ -115,23 +117,23 @@
             z-index: 20; animation: move 2.5s infinite ease-in-out; 
         }
 
-        @keyframes move { 
-            0%, 100% { top: 15%; opacity: 0.3; } 
-            50% { top: 85%; opacity: 1; } 
-        }
+        @keyframes move { 0%, 100% { top: 15%; opacity: 0.3; } 50% { top: 85%; opacity: 1; } }
 
         @media (max-width: 480px) {
-            .card-scan { border-radius: 24px; padding: 1.5rem 1.25rem; }
-            .top-nav { padding: 10px 15px; }
-            .main-container { padding: 15px; }
+            .top-nav { justify-content: flex-end; padding: 10px; gap: 6px; }
+            .btn-glass { font-size: 0.65rem; padding: 6px 10px; }
         }
     </style>
 </head>
 <body>
 
 <nav class="top-nav">
-    <a href="<?= site_url('login') ?>" class="btn-admin">
-        <i class="bi bi-shield-lock-fill"></i> Panel Admin
+    <a href="<?= site_url('login-siswa') ?>" class="btn-glass btn-siswa">
+        <i class="bi bi-person-badge-fill"></i> Login Siswa
+    </a>
+    
+    <a href="<?= site_url('login') ?>" class="btn-glass btn-admin">
+        <i class="bi bi-shield-lock-fill"></i> Admin
     </a>
 </nav>
 
@@ -141,8 +143,8 @@
             <div class="mb-2">
                 <i class="bi bi-qr-code-scan fs-1" style="color: var(--primary);"></i>
             </div>
-            <h4 class="fw-800 mb-1" style="letter-spacing: -0.5px;">E-Presensi Siswa</h4>
-            <p class="text-muted small">Pilih status, isi alasan, lalu scan QR</p>
+            <h4 class="fw-800 mb-1">E-Presensi Siswa</h4>
+            <p class="text-muted small">Pilih status lalu scan QR</p>
         </div>
 
         <form id="scanForm">
@@ -161,7 +163,7 @@
             <div class="mb-3">
                 <input type="text" name="keterangan" id="keterangan" 
                        class="form-control form-control-custom" 
-                       placeholder="Alasan (Contoh: Sakit, Izin Pulang)" required>
+                       placeholder="Alasan (Contoh: Fotocopy, Sakit)" required>
             </div>
 
             <div class="scanner-wrapper">
@@ -169,10 +171,6 @@
                 <div id="reader" style="width: 100%;"></div>
             </div>
         </form>
-        
-        <div class="mt-4 text-center">
-            <p class="text-muted" style="font-size: 0.7rem;">&copy; <?= date('Y') ?> Smart School System</p>
-        </div>
     </div>
 </div>
 
@@ -195,46 +193,28 @@
     function startScanner() {
         html5QrCode.start(
             { facingMode: "environment" },
-            { 
-                fps: 25, 
-                qrbox: { width: 220, height: 220 },
-                aspectRatio: 1.0 
-            },
+            { fps: 25, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
             (decodedText) => {
                 if (isProcessing) return;
-                
-                if (!ketInput.value.trim()) {
+                if (!ketInput.value.trim() && document.getElementById('status').value === 'keluar') {
                     isProcessing = true;
                     Swal.fire({ 
                         icon: 'warning', 
                         title: 'Alasan Kosong', 
                         text: 'Tuliskan alasan izin terlebih dahulu!',
                         confirmButtonColor: '#4f46e5'
-                    }).then(() => { 
-                        isProcessing = false; 
-                        ketInput.focus(); 
-                    });
+                    }).then(() => { isProcessing = false; ketInput.focus(); });
                     return;
                 }
                 processScan(decodedText);
             }
-        ).catch(err => {
-            console.error("Kamera error:", err);
-        });
+        ).catch(err => console.error("Kamera error:", err));
     }
 
     function processScan(qrCode) {
         isProcessing = true;
-        
-        const audio = new Audio('https://www.soundjay.com/buttons/beep-07a.mp3');
-        audio.play().catch(() => {});
-
-        Swal.fire({ 
-            title: 'Memvalidasi...', 
-            html: 'Mohon tunggu sebentar',
-            allowOutsideClick: false, 
-            didOpen: () => { Swal.showLoading(); }
-        });
+        new Audio('https://www.soundjay.com/buttons/beep-07a.mp3').play().catch(() => {});
+        Swal.fire({ title: 'Memvalidasi...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
         const formData = new FormData(document.getElementById('scanForm'));
         formData.append('qr_code', qrCode);
@@ -247,29 +227,13 @@
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success') {
-                Swal.fire({ 
-                    icon: 'success', 
-                    title: 'Berhasil!', 
-                    text: data.message, 
-                    timer: 2500, 
-                    showConfirmButton: false
-                });
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message, timer: 2500, showConfirmButton: false });
                 ketInput.value = ''; 
             } else {
-                Swal.fire({ 
-                    icon: 'error', 
-                    title: 'Gagal', 
-                    text: data.message,
-                    confirmButtonColor: '#4f46e5'
-                });
+                Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonColor: '#4f46e5' });
             }
         })
-        .catch(() => {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Koneksi ke server terputus.' });
-        })
-        .finally(() => { 
-            setTimeout(() => { isProcessing = false; }, 1500);
-        });
+        .finally(() => { setTimeout(() => { isProcessing = false; }, 1500); });
     }
 
     startScanner();

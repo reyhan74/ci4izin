@@ -6,111 +6,105 @@ use App\Controllers\BaseController;
 use App\Models\IzinModel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class LaporanIzin extends BaseController
 {
-    public function index()
+        public function index()
     {
         $izinModel = new IzinModel();
-
-        // Ambil data filter dari URL
-        $tanggal = $this->request->getGet('tanggal');
-        $nama    = $this->request->getGet('nama');
-        $kelas   = $this->request->getGet('kelas');
-        $jurusan = $this->request->getGet('jurusan');
-
-        // Query dengan Join ke tabel siswa
-        $builder = $izinModel->select('izin.*, siswa.nama, siswa.nis, siswa.kelas, siswa.jurusan')
-                             ->join('siswa', 'siswa.id = izin.siswa_id');
-
-        // Terapkan Filter jika ada input
-        if (!empty($tanggal)) {
-            $builder->where('DATE(izin.waktu)', $tanggal);
-        }
-        if (!empty($nama)) {
-            $builder->groupStart()
-                    ->like('siswa.nama', $nama)
-                    ->orLike('siswa.nis', $nama)
-                    ->groupEnd();
-        }
-        if (!empty($kelas)) {
-            $builder->where('siswa.kelas', $kelas);
-        }
-        if (!empty($jurusan)) {
-            $builder->where('siswa.jurusan', $jurusan);
-        }
+        
+        $tgl_awal  = $this->request->getGet('tgl_awal');
+        $tgl_akhir = $this->request->getGet('tgl_akhir');
 
         $data = [
-            // Kirim balik data ke view agar filter tetap terisi (sticky form)
-            'izin'           => $builder->orderBy('izin.waktu', 'DESC')->findAll(),
-            'tanggal'        => $tanggal,
-            'nama_search'    => $nama,
-            'kelas_search'   => $kelas,
-            'jurusan_search' => $jurusan
+            'title'     => 'Laporan Keluar Masuk Siswa 2025',
+            'riwayat'   => $izinModel->getLaporanFull($tgl_awal, $tgl_akhir),
+            'tgl_awal'  => $tgl_awal,
+            'tgl_akhir' => $tgl_akhir
         ];
 
-        // PASTI KAN FILE INI ADA DI: app/Views/admin/laporan_izin.php
-        return view('admin/laporan_izin/index', $data);
+        return view('admin/laporan/index', $data);
     }
 
     public function exportExcel()
     {
         $izinModel = new IzinModel();
-        
-        // Ambil filter yang sama agar data yang didownload sesuai dengan yang difilter
-        $tanggal = $this->request->getGet('tanggal');
-        $nama    = $this->request->getGet('nama');
-        $kelas   = $this->request->getGet('kelas');
-        $jurusan = $this->request->getGet('jurusan');
+        $tgl_awal  = $this->request->getGet('tgl_awal');
+        $tgl_akhir = $this->request->getGet('tgl_akhir');
 
-        $builder = $izinModel->select('izin.*, siswa.nama, siswa.nis, siswa.kelas, siswa.jurusan')
-                             ->join('siswa', 'siswa.id = izin.siswa_id');
+        $dataIzin = $izinModel->getLaporanFull($tgl_awal, $tgl_akhir);
 
-        if ($tanggal) $builder->where('DATE(izin.waktu)', $tanggal);
-        if ($nama)    $builder->like('siswa.nama', $nama)->orLike('siswa.nis', $nama);
-        if ($kelas)   $builder->where('siswa.kelas', $kelas);
-        if ($jurusan) $builder->where('siswa.jurusan', $jurusan);
-
-        $dataIzin = $builder->orderBy('izin.waktu', 'DESC')->findAll();
-
-        // Proses Spreadsheet
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        
-        // Header Tabel
-        $sheet->setCellValue('A1', 'NO');
-        $sheet->setCellValue('B1', 'NAMA SISWA');
-        $sheet->setCellValue('C1', 'NIS');
-        $sheet->setCellValue('D1', 'KELAS');
-        $sheet->setCellValue('E1', 'JURUSAN');
-        $sheet->setCellValue('F1', 'STATUS');
-        $sheet->setCellValue('G1', 'KETERANGAN');
-        $sheet->setCellValue('H1', 'WAKTU');
 
-        // Isi Data
-        $column = 2;
+        // --- STYLING HEADER ---
+        $styleHeader = [
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '4F81BD'],
+            ],
+            'borders' => [
+                'allBorders' => ['borderStyle' => Border::BORDER_THIN],
+            ],
+        ];
+
+        // Judul Laporan di Baris 1
+        $sheet->mergeCells('A1:G1');
+        $sheet->setCellValue('A1', 'REKAPITULASI IZIN KELUAR MASUK SISWA - SMK CB');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Header Tabel di Baris 3
+        $headers = ['No', 'Tanggal/Waktu', 'NIS', 'Nama Siswa', 'Kelas & Jurusan', 'Jenis Izin', 'Keterangan'];
+        $cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+        
+        foreach ($headers as $index => $title) {
+            $sheet->setCellValue($cols[$index] . '3', $title);
+        }
+        $sheet->getStyle('A3:G3')->applyFromArray($styleHeader);
+
+        // --- ISI DATA ---
+        $row = 4;
         foreach ($dataIzin as $key => $value) {
-            $sheet->setCellValue('A' . $column, ($key + 1));
-            $sheet->setCellValue('B' . $column, $value['nama']);
-            $sheet->setCellValue('C' . $column, $value['nis']);
-            $sheet->setCellValue('D' . $column, $value['kelas']);
-            $sheet->setCellValue('E' . $column, $value['jurusan']);
-            $sheet->setCellValue('F' . $column, strtoupper($value['status']));
-            $sheet->setCellValue('G' . $column, $value['keterangan']);
-            $sheet->setCellValue('H' . $column, $value['waktu']);
-            $column++;
+            $sheet->setCellValue('A' . $row, ($key + 1));
+            $sheet->setCellValue('B' . $row, date('d/m/Y H:i', strtotime($value['waktu'])));
+            $sheet->setCellValue('C' . $row, $value['nis']);
+            $sheet->setCellValue('D' . $row, $value['nama_siswa']);
+            $sheet->setCellValue('E' . $row, $value['kelas'] . ' - ' . $value['jurusan']);
+            $sheet->setCellValue('F' . $row, $value['jenis_izin']);
+            $sheet->setCellValue('G' . $row, $value['keterangan']);
+
+            // Beri border pada setiap baris
+            $sheet->getStyle('A' . $row . ':G' . $row)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            
+            // Tengahkan teks tertentu
+            $sheet->getStyle('A' . $row . ':C' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('F' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            
+            $row++;
         }
 
-        // Style header bold
-        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+        // Otomatis atur lebar kolom sesuai isi
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
 
-        $writer = new Xlsx($spreadsheet);
-        $filename = 'Laporan_Izin_' . date('Y-m-d_His') . '.xlsx';
-
+        // --- OUTPUT ---
+        $filename = 'Laporan_Siswa_' . date('Y-m-d_H-i') . '.xlsx';
+        
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
 
+        $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
         exit();
     }

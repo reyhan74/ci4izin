@@ -18,60 +18,70 @@ class Dashboard extends BaseController
     }
 
     public function index()
-{
-    $today = date('Y-m-d');
+    {
+        $today = date('Y-m-d');
+        $db = \Config\Database::connect();
 
-    // 1. Total Seluruh Siswa
-    $totalSiswa = $this->siswa->countAll();
+        // 1. Total Seluruh Siswa
+        $totalSiswa = $this->siswa->countAll();
 
-    // 2. Izin Hari Ini (Total semua transaksi izin hari ini)
-    $izinHariIni = $this->izin
-        ->where('DATE(waktu)', $today)
-        ->countAllResults();
+        // 2. Total Transaksi Hari Ini
+        $izinHariIni = $this->izin->where('DATE(waktu)', $today)->countAllResults();
 
-    // 3. SEDANG KELUAR (Logika Perbaikan)
-    // Menghitung siswa yang status terakhirnya hari ini adalah 'keluar'
-    $izinKeluar = $this->izin
-        ->select('siswa_id')
-        ->where('DATE(waktu)', $today)
-        ->groupBy('siswa_id')
-        ->having('MAX(CASE WHEN status = "keluar" THEN 1 ELSE 0 END) > MAX(CASE WHEN status = "kembali" THEN 1 ELSE 0 END)')
-        ->countAllResults();
+        // 3. LOGIKA SUBQUERY (Mencari Scan Terakhir per Siswa)
+        // Penting: Nama tabel harus tb_izin_siswa
+        $subQuery = $db->table('tb_izin_siswa')
+            ->select('id_siswa, MAX(waktu) as waktu_terakhir')
+            ->where('DATE(waktu)', $today)
+            ->groupBy('id_siswa')
+            ->getCompiledSelect();
 
-    // 4. SUDAH KEMBALI (Logika Perbaikan)
-    // Menghitung siswa yang sudah pernah keluar dan status terakhirnya hari ini adalah 'kembali'
-    $izinKembali = $this->izin
-        ->select('siswa_id')
-        ->where('DATE(waktu)', $today)
-        ->groupBy('siswa_id')
-        ->having('MAX(CASE WHEN status = "kembali" THEN 1 ELSE 0 END) >= MAX(CASE WHEN status = "keluar" THEN 1 ELSE 0 END)')
-        ->countAllResults();
+        // Ambil baris data terakhir tersebut
+        $statusTerakhirSiswa = $db->table('tb_izin_siswa')
+            ->select('jenis_izin')
+            ->join("($subQuery) as latest", "latest.id_siswa = tb_izin_siswa.id_siswa AND latest.waktu_terakhir = tb_izin_siswa.waktu")
+            ->get()
+            ->getResultArray();
 
-    // 5. Izin Terbaru
-    $izinTerbaru = $this->izin
-        ->select('izin.*, siswa.nama')
-        ->join('siswa', 'siswa.id = izin.siswa_id')
-        ->orderBy('waktu', 'DESC')
-        ->limit(5)
-        ->find();
+        $izinKeluar = 0;
+        $izinKembali = 0;
 
-    // 6. Data Grafik
-    $grafikLabels = [];
-    $grafikData   = [];
-    for ($i = 6; $i >= 0; $i--) {
-        $date = date('Y-m-d', strtotime("-$i days"));
-        $grafikLabels[] = date('D', strtotime($date));
-        $grafikData[]   = $this->izin->where('DATE(waktu)', $date)->countAllResults();
+        foreach ($statusTerakhirSiswa as $row) {
+            // PERHATIKAN: Sesuaikan besar kecil huruf (Case Sensitive) dengan database Anda
+            if ($row['jenis_izin'] === 'Keluar') {
+                $izinKeluar++;
+            } 
+            // Di screenshot Anda tulisannya "KEMBALI", maka gunakan "Kembali" atau "KEMBALI"
+            elseif ($row['jenis_izin'] === 'Kembali') {
+                $izinKembali++;
+            }
+        }
+
+        // 4. Izin Terbaru
+        $izinTerbaru = $this->izin
+            ->select('tb_izin_siswa.*, tb_siswa.nama_siswa')
+            ->join('tb_siswa', 'tb_siswa.id_siswa = tb_izin_siswa.id_siswa')
+            ->orderBy('tb_izin_siswa.waktu', 'DESC')
+            ->limit(5)
+            ->findAll();
+
+        // 5. Data Grafik
+        $grafikLabels = [];
+        $grafikData   = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $grafikLabels[] = date('d M', strtotime($date));
+            $grafikData[]   = $this->izin->where('DATE(waktu)', $date)->countAllResults();
+        }
+
+        return view('admin/dashboard', [
+            'totalSiswa'   => $totalSiswa,
+            'izinHariIni'  => $izinHariIni,
+            'izinKeluar'   => $izinKeluar,
+            'izinKembali'  => $izinKembali,
+            'izinTerbaru'  => $izinTerbaru,
+            'grafikLabels' => json_encode($grafikLabels),
+            'grafikData'   => json_encode($grafikData)
+        ]);
     }
-
-    return view('admin/dashboard', [
-        'totalSiswa'   => $totalSiswa,
-        'izinHariIni'  => $izinHariIni,
-        'izinKeluar'   => $izinKeluar,
-        'izinKembali'  => $izinKembali,
-        'izinTerbaru'  => $izinTerbaru,
-        'grafikLabels' => json_encode($grafikLabels),
-        'grafikData'   => json_encode($grafikData)
-    ]);
-}
 }

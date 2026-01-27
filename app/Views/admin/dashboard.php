@@ -83,31 +83,31 @@
             <div class="card border-0 shadow-sm rounded-4 h-100">
                 <div class="card-header bg-transparent border-0 pt-4 ps-4 d-flex justify-content-between align-items-center">
                     <h5 class="fw-bold text-dark mb-0">Aktivitas Terbaru</h5>
-                    <a href="<?= site_url('admin/laporan-izin') ?>" class="text-primary x-small text-decoration-none fw-bold">SEMUA</a>
+                    <a href="<?= site_url('admin/laporan') ?>" class="text-primary x-small text-decoration-none fw-bold">SEMUA</a>
                 </div>
                 <div class="card-body p-0 mt-2">
                     <div class="list-group list-group-flush">
                         <?php if(empty($izinTerbaru)): ?>
                             <div class="text-center py-5">
-                                <p class="text-muted small">Tidak ada aktivitas izin hari ini.</p>
+                                <p class="text-muted small">Tidak ada aktivitas hari ini.</p>
                             </div>
                         <?php else: ?>
                             <?php foreach($izinTerbaru as $izin): ?>
                             <div class="list-group-item border-0 py-3 px-4 activity-item">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center">
-                                        <img src="https://ui-avatars.com/api/?name=<?= urlencode($izin['nama']) ?>&background=random&size=32" class="rounded-circle me-3 shadow-sm">
+                                        <img src="https://ui-avatars.com/api/?name=<?= urlencode($izin['nama_siswa']) ?>&background=random&size=32" class="rounded-circle me-3 shadow-sm">
                                         <div>
-                                            <div class="fw-bold text-dark small"><?= esc($izin['nama']) ?></div>
-                                            <span class="badge <?= $izin['status'] == 'keluar' ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' ?> rounded-pill x-small">
-                                                <?= strtoupper($izin['status']) ?>
+                                            <div class="fw-bold text-dark small"><?= esc($izin['nama_siswa']) ?></div>
+                                            <span class="badge <?= $izin['jenis_izin'] == 'Keluar' ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' ?> rounded-pill x-small">
+                                                <?= strtoupper($izin['jenis_izin']) ?>
                                             </span>
                                             
-                                            <?php if($izin['status'] == 'keluar'): 
+                                            <?php if($izin['jenis_izin'] == 'Keluar'): 
                                                 $durasi = (time() - strtotime($izin['waktu'])) / 3600;
                                                 if($durasi > 1): ?>
                                                 <span class="text-danger x-small ms-1 fw-bold pulse-anim">
-                                                    <i class="bi bi-exclamation-circle"></i> > 1 Jam
+                                                    <i class="bi bi-exclamation-circle"></i> > 1 JAM
                                                 </span>
                                             <?php endif; endif; ?>
                                         </div>
@@ -128,11 +128,13 @@
 
 <style>
     .x-small { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-    .activity-item:hover { background-color: #f8fafc; transition: 0.3s; }
+    .activity-item:hover { background-color: #f8fafc; transition: 0.3s; cursor: pointer; }
     .bg-danger-subtle { background-color: #fee2e2; }
     .bg-success-subtle { background-color: #dcfce7; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     .pulse-anim { animation: pulse 1s infinite; }
+    .btn-white { background: white; color: #64748b; border: 1px solid #e2e8f0; }
+    .btn-white:hover { background: #f8fafc; color: #1e293b; }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -150,7 +152,9 @@
                     backgroundColor: 'rgba(67, 97, 238, 0.1)',
                     fill: true,
                     tension: 0.4,
-                    pointRadius: 4
+                    pointRadius: 4,
+                    pointBackgroundColor: '#4361ee',
+                    borderWidth: 3
                 }]
             },
             options: {
@@ -158,8 +162,15 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } },
-                    x: { grid: { display: false } }
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { stepSize: 1, color: '#94a3b8', font: { family: 'Plus Jakarta Sans' } },
+                        grid: { color: '#f1f5f9' }
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans' } }
+                    }
                 }
             }
         });

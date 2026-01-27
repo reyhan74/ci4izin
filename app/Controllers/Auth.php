@@ -2,12 +2,16 @@
 
 namespace App\Controllers;
 
-use App\Models\UserModel;
+use App\Models\UserizinModel;
 
 class Auth extends BaseController
 {
     public function login()
     {
+        if (session()->get('logged_in')) {
+            return redirect()->to('/' . session()->get('role') . '/dashboard');
+        }
+
         return view('auth/login');
     }
 
@@ -16,25 +20,26 @@ class Auth extends BaseController
         $email    = $this->request->getPost('email');
         $password = $this->request->getPost('password');
 
-        $user = (new UserModel())
-            ->where('email', $email)
-            ->first();
+        $model = new UserizinModel();
+        $user  = $model->where('email', $email)->first();
 
-        // validasi user
-        if (!$user || !password_verify($password, $user['password'])) {
-            return redirect()->back()
-                ->with('error', 'Email atau password salah');
+        if (!$user) {
+            return redirect()->back()->with('error', 'Email tidak terdaftar');
         }
 
-        // set session
+        if (!password_verify($password, $user['password'])) {
+            return redirect()->back()->with('error', 'Password salah');
+        }
+
         session()->set([
-            'login'   => true,
-            'user_id' => $user['id'],
-            'nama'    => $user['nama'],
-            'role'    => $user['role']
+            'id'        => $user['id'],
+            'nama'      => $user['nama'],
+            'email'     => $user['email'],
+            'role'      => $user['role'],
+            'logged_in' => true
         ]);
 
-        // redirect berdasarkan role
+        // Redirect sesuai role yang tersedia
         if ($user['role'] === 'admin') {
             return redirect()->to('/admin/dashboard');
         }
@@ -42,7 +47,13 @@ class Auth extends BaseController
         if ($user['role'] === 'wali') {
             return redirect()->to('/wali/dashboard');
         }
-        return redirect()->to('/login');
+
+        if ($user['role'] === 'guru') {
+            return redirect()->to('/guru/dashboard');
+        }
+
+        // fallback
+        return redirect()->to('/login')->with('error', 'Role tidak dikenali');
     }
 
     public function logout()

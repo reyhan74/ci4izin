@@ -6,27 +6,33 @@ use CodeIgniter\Model;
 
 class IzinModel extends Model
 {
-    protected $table = 'izin';
-    protected $primaryKey = 'id';
+    // Sesuaikan dengan nama tabel di database Anda
+    protected $table      = 'tb_izin_siswa'; 
+    protected $primaryKey = 'id_izin';
 
     protected $allowedFields = [
-        'siswa_id',
-        'status',
+        'id_siswa',
+        'jenis_izin',
+        'waktu',
         'keterangan',
-        'waktu'
+        'status'
     ];
 
-    public function getLaporan($tanggal = null)
+    // Mengambil data izin lengkap dengan JOIN ke tabel siswa, kelas, dan jurusan
+    public function getLaporanFull($tgl_awal = null, $tgl_akhir = null)
     {
-        $builder = $this->db->table('izin')
-            ->select('izin.*, siswa.nis, siswa.nama, siswa.kelas, siswa.jurusan')
-            ->join('siswa', 'siswa.id = izin.siswa_id', 'left')
-            ->orderBy('izin.waktu', 'DESC');
+        $builder = $this->db->table($this->table)
+            ->select('tb_izin_siswa.*, tb_siswa.nama_siswa, tb_siswa.nis, tb_kelas.kelas, tb_jurusan.jurusan')
+            ->join('tb_siswa', 'tb_siswa.id_siswa = tb_izin_siswa.id_siswa')
+            ->join('tb_kelas', 'tb_kelas.id_kelas = tb_siswa.id_kelas')
+            ->join('tb_jurusan', 'tb_jurusan.id = tb_kelas.id_jurusan');
 
-        if ($tanggal) {
-            $builder->where('DATE(izin.waktu)', $tanggal);
+        // Filter berdasarkan tanggal (asumsi kolom 'waktu' berisi datetime/timestamp)
+        if ($tgl_awal && $tgl_akhir) {
+            $builder->where("DATE(tb_izin_siswa.waktu) >=", $tgl_awal);
+            $builder->where("DATE(tb_izin_siswa.waktu) <=", $tgl_akhir);
         }
 
-        return $builder->get()->getResultArray();
+        return $builder->orderBy('tb_izin_siswa.waktu', 'DESC')->get()->getResultArray();
     }
 }

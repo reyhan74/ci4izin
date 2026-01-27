@@ -1,196 +1,192 @@
-<?= $this->extend('layout/admin') ?> 
-<?= $this->section('content') ?>
+<?= $this->extend('layout/admin'); ?>
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        
-        <div class="mb-4 d-flex align-items-center animate__animated animate__fadeIn">
-            <a href="<?= site_url('admin/siswa') ?>" class="btn btn-light btn-sm rounded-3 me-3 border shadow-sm">
-                <i class="bi bi-arrow-left"></i>
-            </a>
-            <div>
-                <h3 class="fw-bold text-dark mb-0">Edit Profil Siswa</h3>
-                <p class="text-muted small mb-0">Perbarui informasi data diri siswa secara berkala.</p>
-            </div>
-        </div>
+<?= $this->section('content'); ?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-        <div class="card border-0 shadow-lg animate__animated animate__zoomIn" style="border-radius: 24px;">
-            <div class="card-body p-4 p-md-5">
-                <form action="<?= site_url('admin/siswa/update/'.$siswa['id']) ?>" method="post" id="editSiswaForm">
-                    <?= csrf_field() ?>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0 mb-4">
+                    <li class="breadcrumb-item"><a href="/admin/siswa" class="text-decoration-none text-muted">Daftar Siswa</a></li>
+                    <li class="breadcrumb-item active text-dark font-weight-bold" aria-current="page">Edit Siswa</li>
+                </ol>
+            </nav>
 
-                    <div class="row">
-                        <div class="col-md-4 text-center border-end mb-4 mb-md-0">
-                            <div class="mb-3">
-                                <img src="https://ui-avatars.com/api/?name=<?= urlencode($siswa['nama']) ?>&background=4361ee&color=fff&size=128" 
-                                     class="rounded-4 shadow border border-4 border-white" 
-                                     width="120" alt="avatar">
-                            </div>
-                            <h6 class="fw-bold text-dark mb-1"><?= esc($siswa['nama']) ?></h6>
-                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 rounded-pill">
-                                NIS: <?= esc($siswa['nis']) ?>
-                            </span>
-                        </div>
-
-                        <div class="col-md-8 ps-md-4">
-                            <div class="mb-3">
-                                <label class="form-label text-muted small fw-bold text-uppercase">Nomor Induk Siswa (NIS)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-0">
-                                        <i class="bi bi-hash"></i>
-                                    </span>
-                                    <input type="text" class="form-control bg-light border-0" 
-                                           value="<?= esc($siswa['nis']) ?>" readonly style="cursor: not-allowed;">
-                                </div>
-                                <small class="text-muted" style="font-size: 0.7rem;">* NIS bersifat unik dan permanen.</small>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label text-muted small fw-bold text-uppercase">Nama Lengkap Siswa</label>
-                                <input type="text" name="nama" class="form-control modern-input" 
-                                       value="<?= esc($siswa['nama']) ?>" required placeholder="Masukkan nama lengkap">
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold text-uppercase">Kelas</label>
-                                    <select name="kelas" class="form-select modern-input" required>
-                                        <option value="" disabled>Pilih Kelas</option>
-                                        <option value="X" <?= ($siswa['kelas'] == 'X') ? 'selected' : '' ?>>X (Sepuluh)</option>
-                                        <option value="XI" <?= ($siswa['kelas'] == 'XI') ? 'selected' : '' ?>>XI (Sebelas)</option>
-                                        <option value="XII" <?= ($siswa['kelas'] == 'XII') ? 'selected' : '' ?>>XII (Duabelas)</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold text-uppercase">Jurusan</label>
-                                    <select name="jurusan" class="form-select modern-input" required>
-                                        <option value="" disabled>Pilih Jurusan</option>
-                                        
-                                        <optgroup label="Teknik Komputer & Jaringan">
-                                            <?php for($i=1; $i<=3; $i++): ?>
-                                                <option value="TKJ <?= $i ?>" <?= ($siswa['jurusan'] == "TKJ $i") ? 'selected' : '' ?>>TKJ <?= $i ?></option>
-                                            <?php endfor; ?>
-                                        </optgroup>
-
-                                        <optgroup label="Teknik Otomasi Industri">
-                                            <?php for($i=1; $i<=2; $i++): ?>
-                                                <option value="TOI <?= $i ?>" <?= ($siswa['jurusan'] == "TOI $i") ? 'selected' : '' ?>>TOI <?= $i ?></option>
-                                            <?php endfor; ?>
-                                        </optgroup>
-
-                                        <optgroup label="Teknik Pemesinan">
-                                            <?php for($i=1; $i<=5; $i++): ?>
-                                                <option value="TPM <?= $i ?>" <?= ($siswa['jurusan'] == "TPM $i") ? 'selected' : '' ?>>TPM <?= $i ?></option>
-                                            <?php endfor; ?>
-                                        </optgroup>
-
-                                        <optgroup label="Teknik Kendaraan Ringan">
-                                            <?php for($i=1; $i<=3; $i++): ?>
-                                                <option value="TKR <?= $i ?>" <?= ($siswa['jurusan'] == "TKR $i") ? 'selected' : '' ?>>TKR <?= $i ?></option>
-                                            <?php endfor; ?>
-                                        </optgroup>
-
-                                        <optgroup label="Teknik Instalasi Tenaga Listrik">
-                                            <?php for($i=1; $i<=3; $i++): ?>
-                                                <option value="TITL <?= $i ?>" <?= ($siswa['jurusan'] == "TITL $i") ? 'selected' : '' ?>>TITL <?= $i ?></option>
-                                            <?php endfor; ?>
-                                        </optgroup>
-
-                                        <optgroup label="Desain Pemodelan & Informasi Bangunan">
-                                            <?php for($i=1; $i<=2; $i++): ?>
-                                                <option value="DPIB <?= $i ?>" <?= ($siswa['jurusan'] == "DPIB $i") ? 'selected' : '' ?>>DPIB <?= $i ?></option>
-                                            <?php endfor; ?>
-                                        </optgroup>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <hr class="my-4 opacity-10">
-
-                            <div class="d-flex justify-content-end gap-2">
-                                <a href="<?= site_url('admin/siswa') ?>" class="btn btn-light rounded-pill px-4 border">
-                                    Batal
-                                </a>
-                                <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
-                                    <i class="bi bi-check-lg me-2"></i>Simpan Perubahan
-                                </button>
-                            </div>
-                        </div>
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
+                    <div class="bg-warning-soft p-2 rounded mr-3">
+                        <i class="fas fa-user-edit text-warning"></i>
                     </div>
-                </form>
+                    <h6 class="m-0 font-weight-bold text-dark">Edit Data Profil Siswa</h6>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form action="/admin/siswa/update/<?= $siswa['id_siswa']; ?>" method="post" enctype="multipart/form-data" id="formEditSiswa">
+                        <?= csrf_field(); ?>
+                        
+                        <input type="hidden" name="fotoLama" value="<?= $siswa['foto']; ?>">
+
+                        <div class="row">
+                            <!-- Kolom Kiri: Data Form -->
+                            <div class="col-md-8 pr-md-4">
+                                <div class="row">
+                                    <div class="col-md-6 form-group mb-3">
+                                        <label class="font-weight-bold small text-muted">Nomor Induk Siswa (NIS)</label>
+                                        <input type="text" name="nis" class="form-control <?= (validation_show_error('nis')) ? 'is-invalid' : ''; ?>" 
+                                               value="<?= old('nis', $siswa['nis']); ?>" placeholder="Masukkan NIS">
+                                        <div class="invalid-feedback"><?= validation_show_error('nis'); ?></div>
+                                    </div>
+
+                                    <div class="col-md-6 form-group mb-3">
+                                        <label class="font-weight-bold small text-muted">Nama Lengkap</label>
+                                        <input type="text" name="nama" class="form-control <?= (validation_show_error('nama')) ? 'is-invalid' : ''; ?>" 
+                                               value="<?= old('nama', $siswa['nama_siswa']); ?>" placeholder="Nama sesuai ijazah">
+                                        <div class="invalid-feedback"><?= validation_show_error('nama'); ?></div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="font-weight-bold small text-muted">Kelas & Jurusan</label>
+                                        <select name="id_kelas" class="form-control custom-select rounded-pill">
+                                            <?php foreach ($kelas as $k) : ?>
+                                                <option value="<?= $k['id_kelas']; ?>" <?= ($k['id_kelas'] == $siswa['id_kelas']) ? 'selected' : ''; ?>>
+                                                    <?= $k['kelas']; ?> - <?= $k['jurusan']; ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="font-weight-bold small text-muted">Jenis Kelamin</label>
+                                        <select name="jk" class="form-control custom-select rounded-pill">
+                                            <?php 
+                                                $valJK = strtoupper(substr(trim($siswa['jenis_kelamin'] ?? 'L'), 0, 1)); 
+                                            ?>
+                                            <option value="L" <?= ($valJK == 'L') ? 'selected' : ''; ?>>Laki-laki</option>
+                                            <option value="P" <?= ($valJK == 'P') ? 'selected' : ''; ?>>Perempuan</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold small text-muted">Nomor WhatsApp / HP</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-light border-right-0 rounded-left-pill"><i class="fab fa-whatsapp text-success"></i></span>
+                                        </div>
+                                        <input type="text" name="no_hp" class="form-control border-left-0 rounded-right-pill" 
+                                               value="<?= old('no_hp', $siswa['no_hp']); ?>" placeholder="62812xxx">
+                                    </div>
+                                    <small class="text-muted"><i class="fas fa-info-circle mr-1"></i>Gunakan kode negara (Contoh: 62812...)</small>
+                                </div>
+                            </div>
+
+                            <!-- Kolom Kanan: Upload Foto -->
+                            <div class="col-md-4 text-center border-left-md pl-md-4">
+                                <label class="font-weight-bold small text-muted d-block text-left mb-3">Foto Profil</label>
+                                
+                                <div class="position-relative d-inline-block mb-3">
+                                    <!-- CONTAINER FOTO (SAMA SEPERTI INDEX & SHOW) -->
+                                    <div class="img-preview-container avatar-wrapper rounded-circle shadow-sm border d-flex align-items-center justify-content-center overflow-hidden bg-light" 
+                                         style="width: 180px; height: 180px; background-color: #eaecf4; position: relative;">
+                                        
+                                        <!-- LOGIKA TAMPILAN: Jika ada file, tampilkan gambar. Jika tidak, tampilkan Inisial -->
+                                        <?php 
+                                        $pathFoto = 'uploads/foto-siswa/' . $siswa['foto'];
+                                        $fotoAda = !empty($siswa['foto']) && file_exists(FCPATH . $pathFoto);
+                                        ?>
+
+                                        <?php if ($fotoAda) : ?>
+                                            <!-- Tag Gambar (Default Visible) -->
+                                            <img src="/<?= $pathFoto; ?>" id="img-preview" class="w-100 h-100" style="object-fit: cover; z-index: 2;">
+                                            <!-- Span Inisial (Hidden) -->
+                                            <span id="preview-initial" class="text-primary font-weight-bold d-none" style="font-size: 60px; z-index: 1;">
+                                                <?= strtoupper(substr($siswa['nama_siswa'], 0, 1)); ?>
+                                            </span>
+                                        <?php else : ?>
+                                            <!-- Tag Gambar (Hidden/Dummy) -->
+                                            <img src="" id="img-preview" class="w-100 h-100 d-none" style="object-fit: cover; z-index: 2;">
+                                            <!-- Span Inisial (Visible) -->
+                                            <span id="preview-initial" class="text-primary font-weight-bold" style="font-size: 60px; z-index: 1;">
+                                                <?= strtoupper(substr($siswa['nama_siswa'], 0, 1)); ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <!-- END CONTAINER FOTO -->
+
+                                    <label for="foto" class="btn btn-sm btn-primary position-absolute shadow border-white" 
+                                           style="bottom: 10px; right: 10px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;">
+                                        <i class="fas fa-camera"></i>
+                                    </label>
+                                    <input type="file" name="foto" class="d-none" id="foto" onchange="previewImg()" accept="image/*">
+                                </div>
+                                
+                                <div class="text-left bg-light p-2 rounded border small">
+                                    <i class="fas fa-info-circle text-warning mr-1"></i> Format: JPG, PNG. Max: 2MB.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-5 pt-3 border-top">
+                            <a href="/admin/siswa" class="btn btn-light px-4 mr-2 rounded-pill border font-weight-bold">Batal</a>
+                            <button type="submit" class="btn btn-warning px-5 text-white font-weight-bold rounded-pill shadow-sm hover-lift" id="btnSubmit">
+                                <i class="fas fa-save mr-2"></i> Perbarui Data
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    .modern-input {
-        background: #f8fafc !important;
-        border: 2px solid #f1f5f9 !important;
-        border-radius: 12px;
-        padding: 12px 15px;
-        transition: all 0.3s ease;
-        color: #334155;
+    .bg-warning-soft { background-color: rgba(246, 194, 62, 0.15); }
+    .breadcrumb-item + .breadcrumb-item::before { content: "›"; font-size: 1.2rem; vertical-align: middle; }
+    .form-control { border-radius: 8px; padding: 10px 15px; border: 1px solid #e3e6f0; }
+    .form-control:focus { box-shadow: 0 0 0 0.2rem rgba(246, 194, 62, 0.1); border-color: #f6c23e; }
+    
+    /* Styling untuk Input Group Rounded */
+    .rounded-left-pill { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+    .rounded-right-pill { border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; }
+    
+    .hover-lift { transition: all 0.2s ease; }
+    .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(246, 194, 62, 0.3) !important; }
+    
+    @media (max-width: 768px) {
+        .border-left-md, .pl-md-4, .pr-md-4 { border-left: none !important; padding-left: 15px !important; padding-right: 15px !important; }
     }
-
-    .modern-input:focus {
-        background: #fff !important;
-        border-color: #4361ee !important;
-        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1) !important;
-    }
-
-    /* Styling khusus Select agar arrow seragam */
-    select.modern-input {
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
-        background-repeat: no-repeat !important;
-        background-position: right 1rem center !important;
-        background-size: 16px 12px !important;
-    }
-
-    optgroup {
-        font-weight: 700;
-        color: #4361ee;
-        font-style: normal;
-        background: #fff;
-    }
-
-    .card { border-radius: 24px; }
 </style>
 
 <script>
-    // SweetAlert Konfirmasi Simpan
-    document.getElementById('editSiswaForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const form = this;
+    // Preview Gambar saat dipilih
+    function previewImg() {
+        const foto = document.querySelector('#foto');
+        const imgPreview = document.querySelector('#img-preview');
+        const initialPreview = document.querySelector('#preview-initial');
 
-        Swal.fire({
-            title: 'Simpan Perubahan?',
-            text: "Pastikan data yang diinput sudah benar.",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#4361ee',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Ya, Simpan!',
-            cancelButtonText: 'Batal',
-            reverseButtons: true,
-            customClass: {
-                popup: 'rounded-4'
+        if (foto.files && foto.files[0]) {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(foto.files[0]);
+
+            fileReader.onload = function(e) {
+                // Tampilkan gambar baru
+                imgPreview.src = e.target.result;
+                imgPreview.classList.remove('d-none');
+                
+                // Sembunyikan inisial
+                initialPreview.classList.add('d-none');
             }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Memproses...',
-                    text: 'Sedang memperbarui data siswa',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                form.submit();
-            }
-        });
+        }
+    }
+
+    // Mencegah Double Submit
+    document.getElementById('formEditSiswa').addEventListener('submit', function() {
+        var btn = document.getElementById('btnSubmit');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
     });
 </script>
-
-<?= $this->endSection() ?>
+<?= $this->endSection(); ?>
