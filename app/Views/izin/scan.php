@@ -143,7 +143,7 @@
             <div class="mb-2">
                 <i class="bi bi-qr-code-scan fs-1" style="color: var(--primary);"></i>
             </div>
-            <h4 class="fw-800 mb-1">E-Presensi Siswa</h4>
+            <h4 class="fw-800 mb-1">E-Izin Siswa</h4>
             <p class="text-muted small">Pilih status lalu scan QR</p>
         </div>
 
@@ -173,6 +173,9 @@
         </form>
     </div>
 </div>
+            <p class="text-center mt-4 text-white-50 x-small" style="font-size: 0.75rem;">
+                    &copy; <?= date('Y') ?> IT Support By rhn.dev
+                </p>
 
 <script>
     const html5QrCode = new Html5Qrcode("reader");

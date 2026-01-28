@@ -132,8 +132,8 @@
                     <div class="brand-logo">
                         <i class="bi bi-qr-code-scan text-white"></i>
                     </div>
-                    <h4 class="fw-bold mb-1">E-Presensi</h4>
-                    <p class="text-white-50 small">Selamat datang kembali, Admin!</p>
+                    <h4 class="fw-bold mb-1">E-Izin Siswa</h4>
+                    <p class="text-white-50 small">Panel Administrasi Sistem</p>
                 </div>
 
                 <div class="login-card animate__animated animate__fadeInUp">
@@ -148,7 +148,7 @@
                         <?= (function_exists('csrf_field')) ? csrf_field() : '' ?>
 
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-white-50">Email Address</label>
+                            <label class="form-label small fw-bold text-white-50">Admin Email</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                                 <input type="email" name="email" class="form-control" 
@@ -168,13 +168,27 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-login w-100 mb-3 text-white">
+                        <button type="submit" class="btn btn-primary btn-login w-100 mb-4 text-white">
                             Masuk Ke Panel <i class="bi bi-arrow-right-short ms-1"></i>
                         </button>
+
+                        <div class="d-flex align-items-center mb-4">
+                            <hr class="flex-grow-1 border-white-50 opacity-25">
+                            <span class="mx-3 small text-white-50">Atau</span>
+                            <hr class="flex-grow-1 border-white-50 opacity-25">
+                        </div>
+
+                        <a href="<?= (function_exists('base_url')) ? base_url('login-siswa') : '#' ?>" class="btn btn-outline-light w-100 border-opacity-25 py-2 rounded-3 small fw-medium mb-2" style="background: rgba(255,255,255,0.05);">
+                            <i class="bi bi-person-badge me-2"></i> Login Siswa
+                        </a>
+
+                        <a href="<?= (function_exists('base_url')) ? base_url('/') : '#' ?>" class="btn btn-link w-100 text-white-50 text-decoration-none small mt-2 py-1">
+                            <i class="bi bi-camera me-1"></i> Kembali ke Scan QR
+                        </a>
                     </form>
                 </div>
 
-                <p class="text-center mt-4 text-white-50 x-small">
+                <p class="text-center mt-4 text-white-50 x-small" style="font-size: 0.75rem;">
                     &copy; <?= date('Y') ?> IT Support By rhn.dev
                 </p>
 
