@@ -63,7 +63,8 @@
                                     <?php $valJK = strtoupper(substr(trim($s['jenis_kelamin'] ?? ''), 0, 1)); ?>
                                     <span class="badge-jk <?= ($valJK === 'L') ? 'bg-soft-primary text-primary' : 'bg-soft-danger text-danger'; ?>">
                                         <i class="fas <?= ($valJK === 'L') ? 'fa-mars' : 'fa-venus'; ?> mr-1"></i>
-                                        <?= ($valJK === 'L') ? 'Laki-laki' : 'Perempuan'; ?>
+                                        <span class="full-text"><?= ($valJK === 'L') ? 'Laki-laki' : 'Perempuan'; ?></span>
+                                        <span class="short-text d-none"><?= $valJK; ?></span>
                                     </span>
                                 </td>
                                 <td class="align-middle">
@@ -167,6 +168,12 @@
     .dataTables_wrapper .dataTables_filter input { border-radius: 20px; border: 1px solid #d1d3e2; padding: 5px 15px; margin-left: 10px; }
     .dataTables_wrapper .dataTables_length select { border-radius: 10px; padding: 2px 5px; }
     .table thead th { border-top: none; }
+
+    /* Responsivitas untuk badge gender */
+    @media (max-width: 768px) {
+        .full-text { display: none; }  /* Sembunyikan teks penuh di mobile */
+        .short-text { display: inline; }  /* Tampilkan singkatan di mobile */
+    }
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
