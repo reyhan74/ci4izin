@@ -4,7 +4,6 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\SiswaModel;
-// Library untuk Excel
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -48,22 +47,69 @@ class Siswa extends BaseController
 
     public function downloadTemplate()
     {
+        $db = \Config\Database::connect();
+        
+        // Ambil data kelas lengkap dengan nama jurusannya untuk referensi
+        $data_referensi = $db->table('tb_kelas')
+            ->select('tb_kelas.id_kelas, tb_kelas.kelas, tb_jurusan.jurusan')
+            ->join('tb_jurusan', 'tb_jurusan.id = tb_kelas.id_jurusan')
+            ->get()->getResultArray();
+
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Header Tabel Excel
+        // --- HEADER TABEL UTAMA (Data yang akan di-import) ---
         $sheet->setCellValue('A1', 'NIS');
         $sheet->setCellValue('B1', 'NAMA_SISWA');
         $sheet->setCellValue('C1', 'JENIS_KELAMIN');
         $sheet->setCellValue('D1', 'ID_KELAS');
         $sheet->setCellValue('E1', 'NO_HP');
 
-        // Contoh Data (Baris 2)
+        // Kolom F dikosongkan (Spacer)
+
+        // --- HEADER DAFTAR REFERENSI (Hanya panduan pengisian) ---
+        $sheet->setCellValue('G1', 'PANDUAN ID KELAS');
+        $sheet->setCellValue('H1', 'NAMA KELAS');
+        $sheet->setCellValue('I1', 'JURUSAN');
+
+        // Styling Header Utama (A-E)
+        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:E1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFD9EAD3');
+
+        // Styling Header Panduan (G-I) - Warna berbeda agar tidak tertukar
+        $sheet->getStyle('G1:I1')->getFont()->setBold(true)->getColor()->setARGB('FFFFFFFF');
+        $sheet->getStyle('G1:I1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FF4E73DF');
+
+        // --- CONTOH DATA ISI (Baris 2) ---
         $sheet->setCellValue('A2', '12345');
-        $sheet->setCellValue('B2', 'Andi Siswanto');
+        $sheet->setCellValue('B2', 'Nama Contoh');
         $sheet->setCellValue('C2', 'L');
-        $sheet->setCellValue('D2', '1'); // ID Kelas (cek tb_kelas)
+        $sheet->setCellValue('D2', '1'); 
         $sheet->setCellValue('E2', '08123456789');
+
+        // --- MEMASUKKAN DAFTAR REFERENSI KE KOLOM G, H, I ---
+        $rowRef = 2;
+        foreach ($data_referensi as $ref) {
+            $sheet->setCellValue('G' . $rowRef, $ref['id_kelas']);
+            $sheet->setCellValue('H' . $rowRef, $ref['kelas']);
+            $sheet->setCellValue('I' . $rowRef, $ref['jurusan']);
+            $rowRef++;
+        }
+
+        // Auto size kolom agar rapi dan teks tidak terpotong
+        foreach (range('A', 'I') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Memberi border pada area referensi agar terlihat seperti tabel bantuan
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                ],
+            ],
+        ];
+        $sheet->getStyle('G1:I' . ($rowRef - 1))->applyFromArray($styleArray);
 
         // Proses download
         $writer = new Xlsx($spreadsheet);
@@ -77,15 +123,12 @@ class Siswa extends BaseController
         exit;
     }
 
-    // ... (fungsi create, saveSiswa, show, edit, update, delete tetap sama)
-
     public function import()
     {
         $file = $this->request->getFile('file_excel');
 
-        // Validasi file
         if (!$file->isValid() || $file->hasMoved()) {
-            return redirect()->back()->with('error', 'File tidak valid atau sudah dipindahkan.');
+            return redirect()->back()->with('error', 'File tidak valid.');
         }
 
         $rules = [
@@ -93,7 +136,7 @@ class Siswa extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->with('error', 'Format file harus .xls/.xlsx dan maksimal 2MB.');
+            return redirect()->back()->with('error', 'Format file salah (harus .xls/.xlsx) atau ukuran terlalu besar.');
         }
 
         try {
@@ -103,35 +146,62 @@ class Siswa extends BaseController
             $spreadsheet = $reader->load($file->getTempName());
             $dataExcel = $spreadsheet->getActiveSheet()->toArray();
 
-            $count = 0;
+            $db = \Config\Database::connect();
+            $successCount = 0;
+            $skipCount = 0;
+            $errorLog = [];
+
             foreach ($dataExcel as $key => $row) {
-                // Skip baris 1 (header) dan baris yang NIS-nya kosong
+                // Skip header (baris 0) dan pastikan kolom NIS & ID_KELAS tidak kosong
                 if ($key == 0 || empty($row[0])) continue;
 
-                $nis = $row[0];
-                
-                // Cek apakah NIS sudah ada di database
+                $nis      = trim($row[0]);
+                $nama     = trim($row[1]);
+                $jk       = strtoupper(trim($row[2]));
+                $id_kelas = trim($row[3]);
+                $no_hp    = trim($row[4]);
+
+                // 1. Cek duplikasi NIS
                 if ($this->siswaModel->where('nis', $nis)->first()) {
+                    $skipCount++;
                     continue; 
                 }
 
-                // Simpan data
+                // 2. VALIDASI FOREIGN KEY: Cek apakah ID Kelas benar-benar ada di database
+                $kelas = $db->table('tb_kelas')->where('id_kelas', $id_kelas)->get()->getRow();
+                
+                if (!$kelas) {
+                    $errorLog[] = "Baris $key: ID Kelas ($id_kelas) tidak ditemukan di database.";
+                    $skipCount++;
+                    continue;
+                }
+
+                // 3. Simpan data jika valid
                 $this->siswaModel->save([
-                    'nis'           => $row[0],
-                    'nama_siswa'    => $row[1],
-                    'jenis_kelamin' => (strtoupper($row[2]) == 'L' ? 'Laki-laki' : 'Perempuan'),
-                    'id_kelas'      => $row[3], // Pastikan di Excel ini adalah ANGKA ID Kelas
-                    'no_hp'         => $row[4],
+                    'nis'           => $nis,
+                    'nama_siswa'    => $nama,
+                    'jenis_kelamin' => ($jk == 'L' ? 'Laki-laki' : 'Perempuan'),
+                    'id_kelas'      => $id_kelas,
+                    'no_hp'         => $no_hp,
                     'foto'          => 'default.png',
                     'unique_code'   => bin2hex(random_bytes(8))
                 ]);
-                $count++;
+                
+                $successCount++;
             }
 
-            return redirect()->to('/admin/siswa')->with('success', "$count data siswa berhasil diimpor.");
+            $msg = "$successCount data berhasil diimpor.";
+            if ($skipCount > 0) $msg .= " $skipCount data dilewati (Duplikat atau ID Kelas salah).";
+            
+            if (!empty($errorLog)) {
+                // Tampilkan pesan error spesifik jika ada ID Kelas yang salah
+                return redirect()->to('/admin/siswa')->with('success', $msg)->with('error', implode('<br>', $errorLog));
+            }
+
+            return redirect()->to('/admin/siswa')->with('success', $msg);
 
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat membaca file: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal memproses file: ' . $e->getMessage());
         }
     }
 
@@ -157,7 +227,7 @@ class Siswa extends BaseController
             'nis'      => 'required|is_unique[tb_siswa.nis]',
             'nama'     => 'required',
             'id_kelas' => 'required',
-            'jk'       => 'required', // Tambahkan validasi jenis kelamin
+            'jk'       => 'required',
             'foto'     => 'uploaded[foto]|max_size[foto,2048]|is_image[foto]|mime_in[foto,image/jpg,image/jpeg,image/png]'
         ];
 
@@ -165,7 +235,6 @@ class Siswa extends BaseController
             return redirect()->back()->withInput();
         }
 
-        // Logika konversi input ke Teks Lengkap
         $jk_input = $this->request->getVar('jk');
         $jenis_kelamin = ($jk_input == 'L') ? 'Laki-laki' : 'Perempuan';
 
@@ -177,7 +246,7 @@ class Siswa extends BaseController
             'nis'           => $this->request->getVar('nis'),
             'nama_siswa'    => $this->request->getVar('nama'),
             'id_kelas'      => $this->request->getVar('id_kelas'),
-            'jenis_kelamin' => $jenis_kelamin, // SIMPAN TEKS LENGKAP
+            'jenis_kelamin' => $jenis_kelamin,
             'no_hp'         => $this->request->getVar('no_hp'),
             'foto'          => $namaFoto,
             'unique_code'   => bin2hex(random_bytes(8))
@@ -212,8 +281,8 @@ class Siswa extends BaseController
         $db = \Config\Database::connect();
         $siswa = $this->siswaModel->find($id);
         
-        if (!$siswa || !is_array($siswa)) {
-            return redirect()->to('/admin/siswa')->with('error', 'Data siswa tidak ditemukan.');
+        if (!$siswa) {
+            return redirect()->to('/admin/siswa')->with('error', 'Data tidak ditemukan.');
         }
 
         $kelas = $db->table('tb_kelas')
@@ -243,7 +312,6 @@ class Siswa extends BaseController
             return redirect()->back()->withInput();
         }
 
-        // Logika konversi input ke Teks Lengkap
         $jk_input = $this->request->getVar('jk');
         $jenis_kelamin = ($jk_input == 'L' || $jk_input == 'Laki-laki') ? 'Laki-laki' : 'Perempuan';
 
@@ -255,7 +323,6 @@ class Siswa extends BaseController
         } else {
             $namaFoto = $fileFoto->getRandomName();
             $fileFoto->move('uploads/foto-siswa', $namaFoto);
-            
             if ($oldFoto != 'default.png' && file_exists('uploads/foto-siswa/' . $oldFoto)) {
                 unlink('uploads/foto-siswa/' . $oldFoto);
             }
@@ -265,12 +332,12 @@ class Siswa extends BaseController
             'nis'           => $this->request->getVar('nis'),
             'nama_siswa'    => $this->request->getVar('nama'),
             'id_kelas'      => $this->request->getVar('id_kelas'),
-            'jenis_kelamin' => $jenis_kelamin, // SIMPAN TEKS LENGKAP
+            'jenis_kelamin' => $jenis_kelamin,
             'no_hp'         => $this->request->getVar('no_hp'),
             'foto'          => $namaFoto
         ]);
 
-        return redirect()->to('/admin/siswa')->with('success', 'Data siswa berhasil diperbarui!');
+        return redirect()->to('/admin/siswa')->with('success', 'Data berhasil diperbarui!');
     }
 
     public function delete($id)
@@ -281,14 +348,12 @@ class Siswa extends BaseController
         }
 
         $this->siswaModel->delete($id);
-        return redirect()->to('/admin/siswa')->with('success', 'Data siswa berhasil dihapus.');
+        return redirect()->to('/admin/siswa')->with('success', 'Data berhasil dihapus.');
     }
 
-// 1. Method untuk menampilkan halaman pilihan filter
     public function cetak_qr()
     {
         $data['title'] = 'Cetak QR Code';
-        
         $filter_kelas = $this->request->getGet('filter_kelas');
         $filter_jurusan = $this->request->getGet('filter_jurusan');
 
@@ -300,17 +365,10 @@ class Siswa extends BaseController
                     ->join('tb_kelas', 'tb_kelas.id_kelas = tb_siswa.id_kelas')
                     ->join('tb_jurusan', 'tb_jurusan.id = tb_kelas.id_jurusan');
 
-        // Logika Filter: Hanya jalankan where jika variabel tidak kosong
-        if ($filter_kelas) {
-            $query->where('tb_siswa.id_kelas', $filter_kelas);
-        }
-        if ($filter_jurusan) {
-            $query->where('tb_kelas.id_jurusan', $filter_jurusan);
-        }
+        if ($filter_kelas) $query->where('tb_siswa.id_kelas', $filter_kelas);
+        if ($filter_jurusan) $query->where('tb_kelas.id_jurusan', $filter_jurusan);
         
-        // Tetap jalankan findAll() meskipun filter kosong (untuk menampilkan semua)
         $data['siswa'] = $query->findAll();
-        
         $data['filter_kelas'] = $filter_kelas;
         $data['filter_jurusan'] = $filter_jurusan;
 

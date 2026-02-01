@@ -38,7 +38,7 @@ $routes->group('admin', ['filter' => 'authadmin'], function($routes) {
         
     // 1. Letakkan rute statis di atas rute dengan parameter (:any)
     $routes->get('siswa/downloadTemplate', 'Admin\Siswa::downloadTemplate'); // PERBAIKAN: Hapus 'Admin\'
-    $routes->post('siswa/import', 'Admin\Siswa::import'); // PERBAIKAN: Hapus 'Admin\'
+    $routes->post('siswa/import', 'Admin\Siswa::import'); 
     
     // 2. Rute utama dan tambah
     $routes->get('siswa', 'Admin\Siswa::index');
@@ -85,8 +85,8 @@ $routes->group('guru', ['filter' => 'authguru'], function($routes) {
 
         
     // 1. Letakkan rute statis di atas rute dengan parameter (:any)
-    $routes->get('siswa/downloadTemplate', 'Guru\Siswa::downloadTemplate'); // PERBAIKAN: Hapus 'Admin\'
-    $routes->post('siswa/import', 'Guru\Siswa::import'); // PERBAIKAN: Hapus 'Admin\'
+    $routes->get('siswa/downloadTemplate', 'Guru\Siswa::downloadTemplate'); 
+    $routes->post('siswa/import', 'Guru\Siswa::import'); 
     
     // 2. Rute utama dan tambah
     $routes->get('siswa', 'Guru\Siswa::index');
