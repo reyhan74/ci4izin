@@ -114,7 +114,21 @@
 <div class="d-flex">
     <aside class="sidebar shadow-lg">
         <div class="sidebar-brand" data-bs-toggle="modal" data-bs-target="#settingsModal">
-            <div class="brand-icon"><i class="bi bi-qr-code-scan text-white"></i></div>
+            <!-- LOGO OPTION 1: Gedung Sekolah + Checklist (Recommended) -->
+            <svg viewBox="0 0 100 100" width="40" height="40" xmlns="http://www.w3.org/2000/svg" class="brand-logo me-2">
+                <!-- Building -->
+                <rect x="15" y="35" width="60" height="50" fill="none" stroke="white" stroke-width="2.5"/>
+                <path d="M 45 25 L 25 35 L 65 35" fill="none" stroke="white" stroke-width="2.5"/>
+                <!-- Windows -->
+                <rect x="22" y="42" width="10" height="10" fill="none" stroke="#4361ee" stroke-width="1.5"/>
+                <rect x="36" y="42" width="10" height="10" fill="none" stroke="#4361ee" stroke-width="1.5"/>
+                <rect x="50" y="42" width="10" height="10" fill="none" stroke="#4361ee" stroke-width="1.5"/>
+                <rect x="22" y="58" width="10" height="10" fill="none" stroke="#4361ee" stroke-width="1.5"/>
+                <rect x="36" y="58" width="10" height="10" fill="none" stroke="#4361ee" stroke-width="1.5"/>
+                <rect x="50" y="58" width="10" height="10" fill="none" stroke="#4361ee" stroke-width="1.5"/>
+                <!-- Checkmark -->
+                <path d="M 70 55 L 75 60 L 85 50" fill="none" stroke="#4361ee" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
             <span class="text-white">E-PRESENSI</span>
         </div>
         
@@ -124,6 +138,12 @@
             </a>
             <a href="<?= site_url('admin/siswa') ?>" class="<?= url_is('admin/siswa*') ? 'active' : '' ?>">
                 <i class="bi bi-people-fill"></i> Data Siswa
+            </a>
+            <a href="<?= site_url('admin/jurusan') ?>" class="<?= url_is('admin/jurusan*') ? 'active' : '' ?>">
+                <i class="bi bi-layers-fill"></i> Data Jurusan
+            </a>
+            <a href="<?= site_url('admin/kelas') ?>" class="<?= url_is('admin/kelas*') ? 'active' : '' ?>">
+                <i class="bi bi-door-closed"></i> Data Kelas
             </a>
             <a href="<?= site_url('admin/laporan') ?>" class="<?= url_is('admin/laporan*') ? 'active' : '' ?>">
                 <i class="bi bi-file-earmark-text-fill"></i> Laporan

@@ -73,6 +73,22 @@ $routes->group('admin', ['filter' => 'authadmin'], function($routes) {
     $routes->get('riwayat', 'Admin\Izin::index');
     $routes->get('laporan', 'Admin\LaporanIzin::index');
     $routes->get('laporan/export', 'Admin\LaporanIzin::exportExcel');
+
+    // CRUD EDIT KELAS
+    $routes->get('jurusan', 'Admin\Jurusan::index');
+    $routes->get('jurusan/create', 'Admin\Jurusan::create');
+    $routes->post('jurusan/store', 'Admin\Jurusan::store');
+    $routes->get('jurusan/edit/(:num)', 'Admin\Jurusan::edit/$1');
+    $routes->post('jurusan/update/(:num)', 'Admin\Jurusan::update/$1');
+    $routes->get('jurusan/delete/(:num)', 'Admin\Jurusan::delete/$1');
+
+    $routes->get('kelas', 'Admin\Kelas::index');
+    $routes->get('kelas/create', 'Admin\Kelas::create');
+    $routes->post('kelas/store', 'Admin\Kelas::store');
+    $routes->get('kelas/edit/(:num)', 'Admin\Kelas::edit/$1');
+    $routes->post('kelas/update/(:num)', 'Admin\Kelas::update/$1');
+    $routes->get('kelas/delete/(:num)', 'Admin\Kelas::delete/$1');
+
 });
 
 $routes->group('guru', ['filter' => 'authguru'], function($routes) {
