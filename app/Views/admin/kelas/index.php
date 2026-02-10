@@ -23,7 +23,7 @@
                     <thead class="bg-light">
                         <tr class="text-secondary" style="font-size: 11px; letter-spacing: 0.5px;">
                             <th class="border-0" style="width: 50px;">NO</th>
-                            <th class="border-0">TINGKAT</th>
+                            <th class="border-0">ID KELAS</th> <th class="border-0">TINGKAT</th>
                             <th class="border-0">JURUSAN</th>
                             <th class="border-0 text-center">AKSI</th>
                         </tr>
@@ -33,12 +33,17 @@
                         <tr>
                             <td class="align-middle text-muted font-weight-bold"><?= $no++ ?></td>
                             <td class="align-middle">
+                                <span class="text-monospace text-muted small" style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px; border: 1px solid #eee;">
+                                    #<?= esc($k['id_kelas']) ?>
+                                </span>
+                            </td>
+                            <td class="align-middle">
                                 <span class="badge badge-light px-3 py-2 text-dark border" style="border-radius: 8px;">
-                                    <b><?= $k['kelas'] ?></b>
+                                    <b><?= esc($k['kelas']) ?></b>
                                 </span>
                             </td>
                             <td class="align-middle font-weight-bold text-primary">
-                                <?= $k['jurusan'] ?>
+                                <?= esc($k['jurusan']) ?>
                             </td>
                             <td class="align-middle text-center">
                                 <div class="btn-group shadow-sm border rounded">
@@ -46,7 +51,7 @@
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
                                     <button type="button" class="btn btn-sm btn-white text-danger py-2 px-3" 
-                                            onclick="confirmDelete('/admin/kelas/delete/<?= $k['id_kelas'] ?>', 'Kelas <?= $k['kelas'] ?> <?= $k['jurusan'] ?>')" title="Hapus">
+                                            onclick="confirmDelete('/admin/kelas/delete/<?= $k['id_kelas'] ?>', 'Kelas <?= esc($k['kelas'] . ' ' . $k['jurusan']) ?>')" title="Hapus">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -60,44 +65,23 @@
     </div>
 </div>
 
-<style>
-    /* Styling Dasar */
-    .hover-lift { transition: transform 0.2s; }
-    .hover-lift:hover { transform: translateY(-2px); }
-    .btn-white { background: #fff; border: none; }
-    .btn-white:hover { background: #f8f9fc; }
-    
-    /* DataTable Mobile Fix */
-    @media (max-width: 576px) {
-        .dataTables_filter input { 
-            width: 100% !important; 
-            margin-left: 0 !important; 
-            border-radius: 10px !important;
-            margin-top: 10px;
-        }
-        .dataTables_length { display: none; }
-        .table td, .table th { padding: 12px 10px; }
-    }
-</style>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>
+<form id="delete-form" action="" method="post" style="display: none;">
+    <?= csrf_field() ?>
+</form>
 
 <script>
     $(document).ready(function() {
         $('#tabelKelas').DataTable({
             "language": {
                 "search": "",
-                "searchPlaceholder": "Cari kelas...",
+                "searchPlaceholder": "Cari data...",
                 "paginate": { "previous": "<", "next": ">" }
             },
             "pageLength": 10,
-            "columnDefs": [{ "orderable": false, "targets": [3] }]
+            "columnDefs": [{ "orderable": false, "targets": [4] }]
         });
     });
 
-    // SweetAlert2 Hapus
     function confirmDelete(url, nama) {
         Swal.fire({
             title: 'Hapus Kelas?',
@@ -111,21 +95,11 @@
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = url;
+                const form = document.getElementById('delete-form');
+                form.action = url;
+                form.submit();
             }
         });
     }
-
-    // Flashdata Success
-    <?php if(session()->getFlashdata('success')): ?>
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: '<?= session()->getFlashdata('success') ?>',
-            timer: 2000,
-            showConfirmButton: false
-        });
-    <?php endif; ?>
 </script>
-
 <?= $this->endSection(); ?>
