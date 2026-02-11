@@ -11,15 +11,20 @@ class KelasModel extends Model
     protected $allowedFields = ['kelas', 'id_jurusan'];
 
     /**
-     * Mengambil semua data kelas untuk dropdown filter
+     * FUNGSI BARU: Mengambil data kelas + jurusan untuk filter QR
      */
+    public function getDataKelas()
+    {
+        return $this->db->table($this->table)
+            ->select('tb_kelas.id_kelas, tb_kelas.kelas, tb_jurusan.jurusan')
+            ->join('tb_jurusan', 'tb_jurusan.id = tb_kelas.id_jurusan')
+            ->orderBy('tb_kelas.kelas', 'ASC')
+            ->get()
+            ->getResultArray();
+    }
+
     public function editKelas($id)
     {
-        $kelas = $this->getKelas($id);
-        if (!empty($kelas)) {
-        $data = $this->inputValues();
-        return $this->builder->where('id_kelas', $kelas->id_kelas)->update($data);
+        // ... kode editKelas Anda yang sudah ada ...
     }
-    return false;
-}
 }

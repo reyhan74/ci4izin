@@ -88,6 +88,29 @@
             position: sticky; top: 0; z-index: 1000;
         }
 
+        .qr-download-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .qr-download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
         .content { padding: 2.5rem; }
 
         /* --- MODAL STYLE --- */
@@ -145,6 +168,9 @@
             <a href="<?= site_url('admin/kelas') ?>" class="<?= url_is('admin/kelas*') ? 'active' : '' ?>">
                 <i class="bi bi-door-closed"></i> Data Kelas
             </a>
+            <a href="<?= site_url('admin/qr-siswa') ?>" class="<?= url_is('admin/qr-siswa*') ? 'active' : '' ?>">
+                <i class="bi bi-qr-code-scan"></i> QR Code Siswa
+            </a>
             <a href="<?= site_url('admin/laporan') ?>" class="<?= url_is('admin/laporan*') ? 'active' : '' ?>">
                 <i class="bi bi-file-earmark-text-fill"></i> Laporan
             </a>
@@ -152,7 +178,7 @@
                 <i class="bi bi-person-badge-fill"></i> Data Guru
             </a>
 
-            <!-- <a href="<?= site_url('admin/siswa/menu_cetak') ?>" class="<?= url_is('admin/siswa/menu_cetak*') ? 'active' : '' ?>">
+            <!-- <a href="<?= site_url('admin/qr-code') ?>" class="<?= url_is('admin/siswa/menu_cetak*') ? 'active' : '' ?>">
                 <i class="bi bi-person-badge-fill"></i> Cetak QR
             </a> -->
 
@@ -182,8 +208,14 @@
             <button class="btn border-0 d-lg-none shadow-sm" id="sidebarToggle" style="background: #fff; width:40px; height:40px; border-radius:10px;">
                 <i class="bi bi-list fs-4"></i>
             </button>
-            <div class="d-none d-md-block">
-                <span class="text-muted fw-medium small"><?= date('l, d F Y') ?></span>
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-none d-md-block">
+                    <span class="text-muted fw-medium small"><?= date('l, d F Y') ?></span>
+                </div>
+                <a href="<?= site_url('admin/qr-siswa/') ?>" class="qr-download-btn d-none d-lg-inline-flex">
+                    <i class="bi bi-qr-code-scan"></i>
+                    <span>Download QR</span>
+                </a>
             </div>
             <img src="https://ui-avatars.com/api/?name=Admin&background=4361ee&color=fff&bold=true" class="rounded-circle border border-2 border-white shadow-sm" width="35" height="35" data-bs-toggle="modal" data-bs-target="#settingsModal" style="cursor:pointer">
         </header>

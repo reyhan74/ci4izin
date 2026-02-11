@@ -89,6 +89,14 @@ $routes->group('admin', ['filter' => 'authadmin'], function($routes) {
     $routes->post('kelas/update/(:num)', 'Admin\Kelas::update/$1');
     $routes->get('kelas/delete/(:num)', 'Admin\Kelas::delete/$1');
 
+    $routes->get('qr-siswa', 'Admin\QrSiswa::index');
+
+    $routes->post('qr-siswa/generateSingle', 'Admin\QrSiswa::generateSingle');
+
+    $routes->get('qr-siswa/cetak', 'Admin\QrSiswa::cetak');
+
+    $routes->get('qr-siswa/pdf', 'Admin\QrSiswa::downloadPdf');
+
 });
 
 $routes->group('guru', ['filter' => 'authguru'], function($routes) {
