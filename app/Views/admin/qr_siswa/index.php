@@ -60,7 +60,7 @@
                         <option value="all">-- Semua Kelas --</option>
                         <?php foreach ($kelas as $k): ?>
                             <option value="<?= $k['id_kelas'] ?>">
-                                <?= $k['jurusan'] ?> - <?= $k['kelas'] ?>
+                                <?= $k['kelas'] ?> - <?= $k['jurusan'] ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
