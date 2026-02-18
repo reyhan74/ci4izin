@@ -54,9 +54,9 @@
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-shield-lock text-primary"></i></span>
                                 <select name="role" class="form-select bg-light border-start-0 ps-0" required>
-                                    <option value="admin" <?= $user['role']=='admin'?'selected':'' ?>>Admin (Full Access)</option>
-                                    <option value="guru" <?= $user['role']=='guru'?'selected':'' ?>>Guru (Operator)</option>
-                                    <option value="wali" <?= $user['role']=='wali'?'selected':'' ?>>Wali Kelas</option>
+                                    <option value="admin" <?= $user['role']=='admin'?'selected':'' ?>>Admin</option>
+                                    <option value="guru" <?= $user['role']=='guru'?'selected':'' ?>>Guru</option>
+                                    <option value="wali" <?= $user['role']=='wali'?'selected':'' ?>></option>
                                 </select>
                             </div>
                         </div>

@@ -43,9 +43,9 @@
                                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-shield-check text-primary"></i></span>
                                 <select name="role" class="form-select bg-light border-start-0 ps-0" required>
                                     <option value="" disabled selected>Pilih Role...</option>
-                                    <option value="admin">Admin (Akses Penuh)</option>
-                                    <option value="guru">Guru (Operator Scan)</option>
-                                    <option value="wali">Wali Kelas (Laporan)</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="guru">Guru</option>
+                                    <option value="wali"></option>
                                 </select>
                             </div>
                         </div>

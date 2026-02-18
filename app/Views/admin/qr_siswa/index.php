@@ -45,9 +45,6 @@
             <a id="btnCetak" href="<?= site_url('admin/qr-siswa/cetak?filter_kelas=all') ?>" target="_blank" class="btn btn-dark shadow-sm px-4 rounded-pill">
                 <i class="fas fa-print mr-2"></i> Cetak
             </a>
-            <a id="btnPdf" href="<?= site_url('admin/qr-siswa/downloadPdf?filter_kelas=all') ?>" class="btn btn-danger shadow-sm px-4 rounded-pill">
-                <i class="fas fa-file-pdf mr-2"></i> PDF
-            </a>
         </div>
     </div>
 
@@ -72,7 +69,7 @@
             <div class="card shadow-sm border-0 rounded-lg h-100">
                 <div class="card-body text-center">
                     <button id="btnGenerateAll" class="btn btn-primary btn-block rounded-pill font-weight-bold shadow-sm mb-3">
-                        ⚡ Generate QR Masal (Sesuai Filter)
+                        ⚡ Generate QR
                     </button>
                     <div class="progress rounded-pill" style="height: 20px;">
                         <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;">

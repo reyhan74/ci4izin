@@ -43,7 +43,6 @@
                                 <td>
                                     <div class="d-flex flex-column">
                                         <span class="text-dark small fw-medium"><?= esc($u['email']) ?></span>
-                                        <span class="text-muted x-small">Last Login: Just now</span>
                                     </div>
                                 </td>
                                 <td>
@@ -53,7 +52,7 @@
                                         </span>
                                     <?php else: ?>
                                         <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 px-3">
-                                            <i class="bi bi-person me-1"></i> Staff
+                                            <i class="bi bi-person me-1"></i> Guru
                                         </span>
                                     <?php endif; ?>
                                 </td>
