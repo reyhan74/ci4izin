@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title><?= $title ?? 'E-Presensi guru' ?></title>
+    <title><?= $title ?? 'E-Presensi Guru' ?></title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,6 +17,7 @@
             --sidebar-width: 280px;
             --accent: #4361ee;
             --main-bg: #f8fafc; 
+            --sidebar-dark: #0f172a;
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -34,41 +35,46 @@
         .sidebar {
             width: var(--sidebar-width);
             height: 100vh;
-            background: #0f172a;
+            background: var(--sidebar-dark);
             position: fixed;
             left: 0; top: 0;
-            z-index: 1050;
+            z-index: 1060;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar-brand {
-            padding: 2.5rem 1.8rem;
-            font-weight: 800; color: #fff;
-            font-size: 1.3rem; display: flex; align-items: center;
+            padding: 2.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
             cursor: pointer;
         }
 
-        .brand-icon {
+        .brand-logo {
+            width: 40px; height: 40px;
             background: var(--accent);
-            width: 38px; height: 38px;
+            border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            border-radius: 12px; margin-right: 12px;
+            margin-right: 12px;
             box-shadow: 0 8px 16px rgba(67, 97, 238, 0.3);
         }
 
-        .nav-custom { padding: 0 1.2rem; }
+        .nav-custom { padding: 0 1rem; flex-grow: 1; }
         .nav-custom a {
-            color: rgba(255,255,255,0.6); padding: 14px 18px;
+            color: rgba(255,255,255,0.5); padding: 12px 16px;
             display: flex; align-items: center;
-            text-decoration: none; border-radius: 14px;
-            margin-bottom: 8px; transition: 0.3s;
-            font-weight: 600; font-size: 0.95rem;
+            text-decoration: none; border-radius: 12px;
+            margin-bottom: 6px; transition: 0.3s;
+            font-weight: 600; font-size: 0.9rem;
         }
 
         .nav-custom a i { margin-right: 12px; font-size: 1.2rem; }
-        .nav-custom a:hover, .nav-custom a.active { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .nav-custom a:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
         .nav-custom a.active {
             background: var(--accent) !important;
+            color: #fff !important;
             box-shadow: 0 10px 20px -5px rgba(67, 97, 238, 0.4);
         }
 
@@ -81,41 +87,56 @@
         }
 
         .top-navbar {
-            padding: 1rem 2.5rem;
+            padding: 0.8rem 2rem;
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border-bottom: 1px solid #eef2f6;
             position: sticky; top: 0; z-index: 1000;
+            height: 70px;
         }
 
-        .content { padding: 2.5rem; }
-
-        /* --- MODAL STYLE --- */
-        .modal-content { border-radius: 30px; border: none; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); }
-        .nav-pills .nav-link { color: #64748b; font-weight: 600; transition: 0.3s; }
-        .nav-pills .nav-link.active { background-color: #fff !important; color: var(--accent) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        
-        .form-control { border: 1px solid transparent; transition: 0.3s; }
-        .form-control:focus { background: #fff !important; border-color: var(--accent) !important; box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1) !important; }
-        
-        .hover-up { transition: 0.3s; }
-        .hover-up:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3) !important; }
+        /* --- MOBILE TRANSPARENT STYLE --- */
+        .sidebar-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+            z-index: 1050;
+            display: none;
+        }
 
         @media (max-width: 991.98px) {
-            .sidebar { transform: translateX(-100%); background: rgba(15, 23, 42, 0.4) !important; backdrop-filter: blur(25px); }
+            .sidebar { 
+                transform: translateX(-100%); 
+                background: rgba(15, 23, 42, 0.8) !important; /* Semi-transparent */
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
+            }
             .sidebar.active { transform: translateX(0); }
+            .sidebar-overlay.active { display: block; }
             main { margin-left: 0; width: 100%; }
-            .content { padding: 1.5rem 1rem; }
+            .top-navbar { padding: 0.8rem 1.2rem; }
         }
+
+        /* --- MODAL --- */
+        .modal-content { border-radius: 24px; border: none; }
+        .nav-pills .nav-link.active { background-color: var(--accent) !important; }
     </style>
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 <div class="d-flex">
     <aside class="sidebar shadow-lg">
         <div class="sidebar-brand" data-bs-toggle="modal" data-bs-target="#settingsModal">
-            <div class="brand-icon"><i class="bi bi-qr-code-scan text-white"></i></div>
-            <span class="text-white">E-PRESENSI</span>
+            <div class="brand-logo">
+                <i class="bi bi-qr-code-scan text-white fs-4"></i>
+            </div>
+            <div class="d-flex flex-column">
+                <span class="text-white fw-800 fs-5 lh-1">E-PRESENSI</span>
+                <span class="text-white-50 small mt-1" style="font-size: 0.6rem; letter-spacing: 1px;">GURU PANEL</span>
+            </div>
         </div>
         
         <nav class="nav-custom">
@@ -128,64 +149,50 @@
             <a href="<?= site_url('guru/laporan') ?>" class="<?= url_is('guru/laporan*') ? 'active' : '' ?>">
                 <i class="bi bi-file-earmark-text-fill"></i> Laporan
             </a>
-            <!-- <a href="<?= site_url('guru/users') ?>" class="<?= url_is('guru/users*') ? 'active' : '' ?>">
-                <i class="bi bi-person-badge-fill"></i> Data Guru
-            </a> -->
-
-            <!-- <a href="<?= site_url('guru/walikelas') ?>" class="<?= url_is('guru/walikelas*') ? 'active' : '' ?>">
-                <i class="bi bi-person-badge-fill"></i> Data Wali Kelas
-            </a> -->
             
-            <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 2rem 1.2rem;"></div>
+            <div style="height: 1px; background: rgba(255,255,255,0.08); margin: 1.5rem 1rem;"></div>
             
-            <a href="javascript:void(0)"
-            data-bs-toggle="modal"
-            data-bs-target="#settingsModal"
-            class="<?= url_is('guru/settings*') ? 'active' : '' ?>">
-                <i class="bi bi-gear-fill"></i> Pengaturan
+            <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                <i class="bi bi-gear-fill"></i> Pengaturan Akun
             </a>
 
-            <a href="javascript:void(0)" class="text-danger mt-3" id="logoutBtn">
-                <i class="bi bi-power"></i> Keluar
+            <a href="javascript:void(0)" class="text-danger-emphasis mt-2" id="logoutBtn">
+                <i class="bi bi-power"></i> Keluar Sesi
             </a>
         </nav>
     </aside>
 
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
     <main>
         <header class="top-navbar d-flex justify-content-between align-items-center">
-            <button class="btn border-0 d-lg-none shadow-sm" id="sidebarToggle" style="background: #fff; width:40px; height:40px; border-radius:10px;">
-                <i class="bi bi-list fs-4"></i>
-            </button>
-            <div class="d-none d-md-block">
-                <span class="text-muted fw-medium small"><?= date('l, d F Y') ?></span>
+            <div class="d-flex align-items-center">
+                <button class="btn border-0 d-lg-none shadow-sm me-3" id="sidebarToggle" style="background: #f1f5f9; border-radius:10px;">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
+                <div class="d-none d-md-block">
+                    <h6 class="fw-bold mb-0">Halo, Selamat Datang</h6>
+                    <small class="text-muted"><?= date('l, d F Y') ?></small>
+                </div>
             </div>
-            <img src="https://ui-avatars.com/api/?name=guru&background=4361ee&color=fff&bold=true" class="rounded-circle border border-2 border-white shadow-sm" width="35" height="35" data-bs-toggle="modal" data-bs-target="#settingsModal" style="cursor:pointer">
+            
+            <div class="d-flex align-items-center" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                <span class="me-2 d-none d-sm-inline fw-semibold small">Admin Guru</span>
+                <img src="https://ui-avatars.com/api/?name=guru&background=4361ee&color=fff&bold=true" class="rounded-circle border border-2 border-white shadow-sm" width="38" height="38">
+            </div>
         </header>
 
-        <div class="content">
+        <div class="content animate__animated animate__fadeIn">
             <?= $this->renderSection('content') ?>
         </div>
     </main>
 </div>
 
 <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-        <div class="modal-content shadow-lg border-0 overflow-hidden">
-            <div class="modal-header border-0 p-4 pb-0 d-flex justify-content-between align-items-start">
-                <div class="d-flex align-items-center">
-                    <div class="bg-primary bg-opacity-10 p-3 rounded-4 me-3">
-                        <i class="bi bi-gear-wide-connected text-primary fs-3"></i>
-                    </div>
-                    <div>
-                        <h4 class="fw-800 mb-0">Settings</h4>
-                        <p class="text-muted small mb-0">Kelola akun Anda</p>
-                    </div>
-                </div>
-                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header border-0 p-4 pb-0">
+                <h5 class="fw-800 mb-0">Pengaturan</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
             </div>
-
             <div class="modal-body p-4">
                 <ul class="nav nav-pills mb-4 bg-light p-1 rounded-4 d-flex" role="tablist">
                     <li class="nav-item flex-fill">
@@ -200,36 +207,31 @@
                     <div class="tab-pane fade show active" id="pills-profile">
                         <form action="<?= base_url('guru/settings/profile') ?>" method="post">
                             <?= csrf_field() ?>
-                            <div class="form-floating mb-3">
-                                <input type="text" name="nama" class="form-control bg-light rounded-4" id="floatName" placeholder="Nama" value="<?= session()->get('nama') ?>" required>
-                                <label for="floatName" class="text-muted small fw-bold"><i class="bi bi-person me-1"></i> Nama Lengkap</label>
+                            <div class="mb-3">
+                                <label class="small fw-bold mb-1">Nama Lengkap</label>
+                                <input type="text" name="nama" class="form-control bg-light rounded-3 py-2" value="<?= session()->get('nama') ?>" required>
                             </div>
-                            <div class="form-floating mb-4">
-                                <input type="email" name="email" class="form-control bg-light rounded-4" id="floatEmail" placeholder="Email" value="<?= session()->get('email') ?>" required>
-                                <label for="floatEmail" class="text-muted small fw-bold"><i class="bi bi-envelope me-1"></i> Email</label>
+                            <div class="mb-4">
+                                <label class="small fw-bold mb-1">Email</label>
+                                <input type="email" name="email" class="form-control bg-light rounded-3 py-2" value="<?= session()->get('email') ?>" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 rounded-4 fw-bold py-3 shadow-sm hover-up">
-                                Simpan Perubahan <i class="bi bi-check2-all ms-2"></i>
-                            </button>
+                            <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-bold shadow-sm">Simpan Perubahan</button>
                         </form>
                     </div>
 
                     <div class="tab-pane fade" id="pills-security">
                         <form action="<?= base_url('guru/settings/password') ?>" method="post" id="formPassword">
                             <?= csrf_field() ?>
-                            <div class="form-floating mb-3">
-                                <input type="password" name="password" class="form-control bg-light rounded-4" id="newPass" placeholder="Password Baru" required minlength="6">
-                                <label for="newPass" class="text-muted small fw-bold"><i class="bi bi-key me-1"></i> Password Baru</label>
+                            <div class="mb-3">
+                                <label class="small fw-bold mb-1">Password Baru</label>
+                                <input type="password" name="password" class="form-control bg-light rounded-3 py-2" id="newPass" required minlength="6">
                             </div>
-                            <div class="form-floating mb-2">
-                                <input type="password" id="confirmPass" class="form-control bg-light rounded-4" placeholder="Ulangi Password" required>
-                                <label for="confirmPass" class="text-muted small fw-bold"><i class="bi bi-shield-check me-1"></i> Verifikasi Password</label>
+                            <div class="mb-3">
+                                <label class="small fw-bold mb-1">Konfirmasi Password</label>
+                                <input type="password" id="confirmPass" class="form-control bg-light rounded-3 py-2" required>
                             </div>
-                            <div id="passMsg" class="small fw-bold mb-4 ms-2 d-none"></div>
-
-                            <button type="submit" id="btnUpdatePass" class="btn btn-danger w-100 rounded-4 fw-bold py-3 shadow-sm hover-up" disabled>
-                                Update Password <i class="bi bi-shield-lock ms-2"></i>
-                            </button>
+                            <div id="passMsg" class="small fw-bold mb-3 d-none"></div>
+                            <button type="submit" id="btnUpdatePass" class="btn btn-danger w-100 rounded-3 py-2 fw-bold shadow-sm" disabled>Update Password</button>
                         </form>
                     </div>
                 </div>
@@ -240,57 +242,46 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Sidebar Toggle Logic
+    // Sidebar Toggle
     const sidebar = document.querySelector('.sidebar');
     const toggleBtn = document.getElementById('sidebarToggle');
     const overlay = document.getElementById('sidebarOverlay');
-    const toggleAction = () => sidebar.classList.toggle('active');
+    
+    const toggleAction = () => {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    };
+
     if(toggleBtn) toggleBtn.addEventListener('click', toggleAction);
     if(overlay) overlay.addEventListener('click', toggleAction);
 
-    // SweetAlert Flashdata
-    <?php if (session()->getFlashdata('success')) : ?>
-        Swal.fire({ icon: 'success', title: 'Berhasil!', text: '<?= session()->getFlashdata('success') ?>', timer: 2500, showConfirmButton: false });
-    <?php endif; ?>
-    <?php if (session()->getFlashdata('error')) : ?>
-        Swal.fire({ icon: 'error', title: 'Oops...', text: '<?= session()->getFlashdata('error') ?>' });
-    <?php endif; ?>
-
-    // Password Verification Logic
+    // Password Validation
     const newPass = document.getElementById('newPass');
     const confirmPass = document.getElementById('confirmPass');
     const passMsg = document.getElementById('passMsg');
     const btnPass = document.getElementById('btnUpdatePass');
 
     function validatePass() {
-        const p1 = newPass.value;
-        const p2 = confirmPass.value;
-
-        if(p2.length > 0) {
+        if(confirmPass.value.length > 0) {
             passMsg.classList.remove('d-none');
-            if(p1 === p2) {
-                passMsg.innerHTML = '<i class="bi bi-check-circle-fill"></i> Password Cocok';
-                passMsg.className = "small fw-bold mb-4 ms-2 text-success animate__animated animate__fadeIn";
-                confirmPass.style.borderColor = "#2ecc71";
+            if(newPass.value === confirmPass.value) {
+                passMsg.innerText = "Password Cocok";
+                passMsg.className = "small fw-bold mb-3 text-success";
                 btnPass.disabled = false;
             } else {
-                passMsg.innerHTML = '<i class="bi bi-x-circle-fill"></i> Password Tidak Cocok';
-                passMsg.className = "small fw-bold mb-4 ms-2 text-danger animate__animated animate__shakeX";
-                confirmPass.style.borderColor = "#e74c3c";
+                passMsg.innerText = "Password Tidak Cocok";
+                passMsg.className = "small fw-bold mb-3 text-danger";
                 btnPass.disabled = true;
             }
-        } else {
-            passMsg.classList.add('d-none');
-            btnPass.disabled = true;
-        }
+        } else { passMsg.classList.add('d-none'); }
     }
     newPass.addEventListener('keyup', validatePass);
     confirmPass.addEventListener('keyup', validatePass);
 
-    // Logout SweetAlert
+    // Logout
     document.getElementById('logoutBtn').addEventListener('click', function() {
         Swal.fire({
-            title: 'Yakin Keluar?',
+            title: 'Yakin mau keluar?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#4361ee',
