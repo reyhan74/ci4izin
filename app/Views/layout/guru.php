@@ -27,7 +27,7 @@
             color: #1e293b;
         }
 
-        /* --- SIDEBAR GLASSMORPHISM --- */
+        /* --- SIDEBAR --- */
         .sidebar {
             width: var(--sidebar-width);
             height: 100vh;
@@ -47,14 +47,6 @@
             align-items: center;
             text-decoration: none;
             border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .brand-icon {
-            background: var(--accent);
-            width: 38px; height: 38px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 10px; margin-right: 12px;
-            color: white;
         }
 
         .nav-custom { padding: 1rem; flex-grow: 1; overflow-y: auto; }
@@ -99,21 +91,12 @@
             height: 65px;
         }
 
-        .qr-download-btn {
-            background: var(--accent);
-            color: white; padding: 8px 16px;
-            border-radius: 8px; font-size: 0.8rem; font-weight: 700;
-            text-decoration: none; display: flex; align-items: center; gap: 6px;
-        }
-
-        /* --- MOBILE TRANSPARENT STYLE --- */
+        /* --- MOBILE --- */
         @media (max-width: 991.98px) {
             .sidebar { 
                 transform: translateX(-100%); 
-                /* Efek Transparan Glassmorphism di Mobile */
-                background: rgba(15, 23, 42, 0.8) !important;
+                background: rgba(15, 23, 42, 0.95) !important;
                 backdrop-filter: blur(15px);
-                -webkit-backdrop-filter: blur(15px);
             }
             .sidebar.active { transform: translateX(0); }
             main { margin-left: 0; width: 100%; }
@@ -134,16 +117,15 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <aside class="sidebar">
-        <a href="<?= site_url('guru/dashboard') ?>" class="sidebar-brand">
-    <div class="brand-logo-container me-2">
-        <img src="<?= base_url('/img/logo.png') ?>" alt="Logo" class="img-fluid" style="height: 40px; width: auto;">
-    </div>
-    
-    <div class="d-flex flex-column">
-        <span class="text-white lh-1 fw-800 fs-5">E-IZIN</span>
-        <span class="text-white-50 small" style="font-size: 0.6rem; letter-spacing: 1px;">MANAGEMENT SYSTEM</span>
-    </div>
-</a>
+        <a href="<?= site_url('guru/dashboard') ?>" class="sidebar-brand text-decoration-none">
+            <div class="brand-logo-container me-2">
+                <img src="<?= base_url('/img/logo.png') ?>" alt="Logo" class="img-fluid" style="height: 35px; width: auto;">
+            </div>
+            <div class="d-flex flex-column">
+                <span class="text-white lh-1 fw-800 fs-5">E-IZIN</span>
+                <span class="text-white-50 small" style="font-size: 0.55rem; letter-spacing: 1px;">SMK CB PARE</span>
+            </div>
+        </a>
         
         <nav class="nav-custom">
             <div class="nav-label">Menu Utama</div>
@@ -156,7 +138,12 @@
             <a href="<?= site_url('guru/laporan') ?>" class="<?= url_is('guru/laporan*') ? 'active' : '' ?>">
                 <i class="bi bi-journal-text"></i> Riwayat Izin
             </a>
-            <div class="mt-4 px-2 pt-4 border-top border-secondary border-opacity-10">
+
+            <div class="nav-label">Akun</div>
+            <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                <i class="bi bi-gear-fill"></i> Pengaturan
+            </a>
+            <div class="mt-2 px-2 pt-2 border-top border-secondary border-opacity-10">
                 <a href="javascript:void(0)" class="text-danger py-2" id="logoutBtn">
                     <i class="bi bi-power"></i> Keluar
                 </a>
@@ -171,23 +158,27 @@
                     <i class="bi bi-list fs-4"></i>
                 </button>
                 <div class="d-none d-md-block">
-                    <h6 class="fw-800 mb-0"><?= $title ?? 'Admin' ?></h6>
+                    <h6 class="fw-800 mb-0"><?= $title ?? 'Panel Guru' ?></h6>
                     <small class="text-muted" style="font-size: 0.7rem;"><?= date('l, d F Y') ?></small>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center gap-2">
-                <a href="<?= site_url('admin/qr-siswa/') ?>" class="qr-download-btn d-none d-sm-flex">
-                    <i class="bi bi-printer-fill"></i> Cetak QR
-                </a>
-                <div class="ms-2 ps-2 border-start d-flex align-items-center gap-2" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#settingsModal">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=4361ee&color=fff&bold=true" class="rounded-circle" width="32" height="32">
-                    <i class="bi bi-chevron-down small opacity-50 d-none d-lg-block"></i>
+            <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center gap-2 p-1 pe-3 rounded-pill bg-light border shadow-sm" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                    <img src="https://ui-avatars.com/api/?name=<?= urlencode(session()->get('nama')) ?>&background=4361ee&color=fff&bold=true" 
+                         class="rounded-circle shadow-sm" 
+                         width="32" height="32" 
+                         alt="User Avatar">
+                    <div class="d-none d-lg-block">
+                        <div class="fw-bold mb-0 lh-1" style="font-size: 0.75rem;"><?= session()->get('nama') ?></div>
+                        <small class="text-muted" style="font-size: 0.65rem;">Tenaga Pengajar</small>
+                    </div>
+                    <i class="bi bi-chevron-down small opacity-50 ms-1 d-none d-lg-block"></i>
                 </div>
             </div>
         </header>
 
-        <div class="content animate__animated animate__fadeIn">
+        <div class="content p-3 p-lg-4 animate__animated animate__fadeIn">
             <?= $this->renderSection('content') ?>
         </div>
     </main>
@@ -203,15 +194,15 @@
             <div class="modal-body p-4">
                 <ul class="nav nav-pills mb-4 bg-light p-1 rounded-3 d-flex" role="tablist">
                     <li class="nav-item flex-fill">
-                        <button class="nav-link active w-100 py-2" data-bs-toggle="pill" data-bs-target="#pills-profile">Profil</button>
+                        <button class="nav-link active w-100 py-2 fw-bold" data-bs-toggle="pill" data-bs-target="#pills-profile">Profil</button>
                     </li>
                     <li class="nav-item flex-fill">
-                        <button class="nav-link w-100 py-2" data-bs-toggle="pill" data-bs-target="#pills-security">Keamanan</button>
+                        <button class="nav-link w-100 py-2 fw-bold" data-bs-toggle="pill" data-bs-target="#pills-security">Keamanan</button>
                     </li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="pills-profile">
-                        <form action="<?= base_url('admin/settings/profile') ?>" method="post">
+                        <form action="<?= base_url('guru/settings/profile') ?>" method="post">
                             <?= csrf_field() ?>
                             <div class="mb-3">
                                 <label class="small fw-bold mb-1">Nama Lengkap</label>
@@ -221,11 +212,11 @@
                                 <label class="small fw-bold mb-1">Email</label>
                                 <input type="email" name="email" class="form-control bg-light border-0 py-2" value="<?= session()->get('email') ?>" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Simpan</button>
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">Simpan Perubahan</button>
                         </form>
                     </div>
                     <div class="tab-pane fade" id="pills-security">
-                        <form action="<?= base_url('admin/settings/password') ?>" method="post" id="formPassword">
+                        <form action="<?= base_url('guru/settings/password') ?>" method="post" id="formPassword">
                             <?= csrf_field() ?>
                             <div class="mb-3">
                                 <label class="small fw-bold mb-1">Password Baru</label>
@@ -268,11 +259,11 @@
         if (confirmPass.value.length > 0) {
             passMsg.classList.remove('d-none');
             if (newPass.value === confirmPass.value) {
-                passMsg.innerHTML = 'Password Cocok';
+                passMsg.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Password Cocok';
                 passMsg.className = "small fw-bold mb-3 text-success";
                 btnPass.disabled = false;
             } else {
-                passMsg.innerHTML = 'Password Tidak Cocok';
+                passMsg.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i> Password Tidak Cocok';
                 passMsg.className = "small fw-bold mb-3 text-danger";
                 btnPass.disabled = true;
             }
@@ -284,10 +275,12 @@
 
     document.getElementById('logoutBtn').addEventListener('click', function() {
         Swal.fire({
-            title: 'Keluar?',
+            title: 'Yakin ingin keluar?',
+            text: "Sesi Anda akan diakhiri.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#4361ee',
+            cancelButtonColor: '#6c757d',
             confirmButtonText: 'Ya, Keluar'
         }).then((result) => { if (result.isConfirmed) window.location.href = "<?= site_url('logout') ?>"; });
     });
