@@ -47,31 +47,76 @@
             padding: 2rem 1.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
         }
 
+        /* --- Modern Switch Camera Button --- */
         .btn-switch {
-            background: linear-gradient(135deg, #64748b 0%, #334155 100%);
+            background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
             color: white;
             border: none;
-            padding: 12px;
-            border-radius: 15px;
-            font-weight: 700;
-            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: 18px;
             width: 100%;
-            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+        }
+        
+        .btn-switch .icon-circle {
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(51, 65, 85, 0.2);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
         }
-
+        
+        .btn-switch .btn-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        
+        .btn-switch .main-text {
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+        }
+        
+        .btn-switch .sub-text {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+        
+        /* Hover & Active States */
         .btn-switch:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(51, 65, 85, 0.3);
-            background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(30, 41, 59, 0.3);
+            background: linear-gradient(135deg, #334155 0%, #0f172a 100%);
         }
-
+        
+        .btn-switch:hover .icon-circle {
+            background: var(--primary); /* Berubah biru saat hover */
+            transform: rotate(180deg);
+        }
+        
         .btn-switch:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
+        }
+        
+        /* Penyesuaian Mobile */
+        @media (max-width: 576px) {
+            .btn-switch .sub-text {
+                display: none; /* Sembunyikan sub-teks di layar sangat kecil agar ringkas */
+            }
+            .btn-switch {
+                justify-content: center;
+                padding: 12px;
+            }
         }
 
         /* --- SCANNER RESPONSIVE ENGINE --- */
