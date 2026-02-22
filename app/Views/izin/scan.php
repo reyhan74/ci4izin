@@ -3,30 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Scan | Izin Siswa</title>
+    <title>Smart Scan | E-Izin Siswa</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root { 
             --primary: #4361ee; 
-            --primary-dark: #3556e6;
             --success: #10b981; 
             --danger: #ef4444;
-            --warning: #f59e0b;
             --bg: #0f172a;
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1a2942 50%, #0d1f3c 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1a2942 100%);
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
             display: flex;
@@ -35,159 +31,228 @@
             overflow-x: hidden;
         }
 
-        /* --- Navigation --- */
-        .top-nav {
-            width: 100%;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .brand-header { display: flex; align-items: center; gap: 12px; }
-        .brand-logo {
-            width: 45px; height: 45px;
-            background: rgba(67, 97, 238, 0.2);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px; color: white;
-        }
-        .brand-text { color: white; font-weight: 800; font-size: 1.1rem; }
-
+        /* --- Nav --- */
+        .top-nav { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .brand-text { color: white; font-weight: 800; font-size: 1.1rem; line-height: 1.2; }
         .btn-glass {
-            background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(10px); 
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); 
             border: 1px solid rgba(255, 255, 255, 0.15);
-            color: white; padding: 10px 18px; border-radius: 12px; 
-            font-weight: 600; font-size: 0.9rem; text-decoration: none;
-            display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;
-        }
-        .btn-glass:hover { 
-            background: rgba(255, 255, 255, 0.2); color: #fff; 
-            transform: translateY(-2px);
+            color: white; padding: 8px 15px; border-radius: 12px; text-decoration: none;
         }
 
-        /* --- Main UI --- */
-        .main-container {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            padding: 20px 15px; width: 100%;
-        }
-
+        /* --- UI Card --- */
+        .main-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 15px; }
         .card-scan { 
-            width: 100%; max-width: 480px;
-            background: white; border-radius: 24px;
-            padding: 2rem; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            text-align: center;
+            width: 100%; max-width: 450px; background: white; border-radius: 30px; 
+            padding: 2rem 1.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
         }
 
-        .header-section h4 { font-weight: 800; color: #0f172a; }
-        .header-section p { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .btn-switch {
+            background: linear-gradient(135deg, #64748b 0%, #334155 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(51, 65, 85, 0.2);
+        }
 
-        /* --- Scanner Area --- */
+        .btn-switch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(51, 65, 85, 0.3);
+            background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+        }
+
+        .btn-switch:active {
+            transform: translateY(0);
+        }
+
+        /* --- SCANNER RESPONSIVE ENGINE --- */
         .scanner-wrapper { 
-            position: relative; border-radius: 16px; overflow: hidden; 
-            background: #000; aspect-ratio: 1/1; margin: 1.2rem 0; 
-            border: 3px solid #f1f5f9;
+            position: relative; 
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Menjaga bentuk kotak sempurna di layar mana pun */
+            background: #000; 
+            border-radius: 24px; 
+            margin: 1.5rem 0; 
+            border: 4px solid #f1f5f9;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
 
-        #reader { border: none !important; width: 100%; height: 100%; }
-        
+        /* Memaksa video kamera agar memenuhi kotak (Auto-Crop) */
+        #reader { width: 100% !important; height: 100% !important; border: none !important; }
+        #reader video { 
+            width: 100% !important; height: 100% !important; 
+            object-fit: cover !important; /* Kunci utama responsivitas kamera */
+        }
+
+        /* Garis Scan Animasi */
         .scan-line {
             position: absolute; width: 100%; height: 3px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            box-shadow: 0 0 15px var(--primary);
+            background: var(--primary); box-shadow: 0 0 15px var(--primary);
             top: 0; z-index: 10; animation: scanning 2.5s infinite linear;
+            pointer-events: none;
         }
-
         @keyframes scanning { 0% { top: 0%; } 100% { top: 100%; } }
 
-        /* --- Controls --- */
-        .status-selector { 
-            background: #f1f5f9; padding: 6px; border-radius: 16px; 
-            display: flex; gap: 8px; margin-bottom: 1.2rem; 
+        /* Overlay Frame (Target Visual) */
+        .scanner-overlay {
+            position: absolute; inset: 0;
+            border: 40px solid rgba(0,0,0,0.3); /* Bingkai transparan */
+            z-index: 5; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .scanner-overlay::after {
+            content: ""; width: 100%; height: 100%;
+            border: 2px solid rgba(255,255,255,0.5); border-radius: 8px;
         }
 
+        /* --- Form Controls --- */
+        .status-selector { background: #f1f5f9; padding: 5px; border-radius: 15px; display: flex; gap: 5px; margin-bottom: 1rem; }
         .btn-status { 
-            border: none; padding: 10px; border-radius: 12px; 
-            font-weight: 700; font-size: 0.85rem; flex: 1; 
-            color: #64748b; background: transparent; transition: all 0.3s ease;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            border: none; padding: 10px; border-radius: 10px; flex: 1; 
+            font-weight: 700; font-size: 0.85rem; color: #64748b; background: transparent; transition: 0.3s;
         }
-
-        .btn-status.active { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .btn-status.active { background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .btn-status.active[data-status="keluar"] { color: var(--danger); }
         .btn-status.active[data-status="kembali"] { color: var(--success); }
 
         .form-control-custom {
-            border-radius: 12px; padding: 12px 16px; border: 2px solid #f1f5f9;
-            font-weight: 500; transition: all 0.3s ease;
+            border-radius: 12px; padding: 12px; border: 2px solid #f1f5f9; font-weight: 600;
         }
-        .form-control-custom:focus {
-            border-color: var(--primary); box-shadow: none; background: #f8faff;
-        }
-
         .scanner-btn {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white; border: none; padding: 12px 24px; border-radius: 12px;
-            font-weight: 700; width: 100%; transition: all 0.3s ease;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: var(--primary); color: white; border: none; padding: 12px; 
+            border-radius: 12px; font-weight: 700; width: 100%;
         }
 
-        /* --- Notifications --- */
-        .notification {
-            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-            padding: 16px 24px; border-radius: 16px; background: white;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2); display: flex;
-            align-items: center; gap: 12px; z-index: 9999;
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            min-width: 300px; font-weight: 600;
+        .camera-loading {
+            position: absolute; inset: 0; background: #000; z-index: 20;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
         }
-        .notification.show { top: 30px; }
-        .notification.success { border-bottom: 4px solid var(--success); color: var(--success); }
-        .notification.error { border-bottom: 4px solid var(--danger); color: var(--danger); }
-        .notification.warning { border-bottom: 4px solid var(--warning); color: var(--warning); }
-
-        /* --- Camera Overlay --- */
-        .camera-loading, .camera-error {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.8);
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; color: white; z-index: 100; padding: 20px;
-        }
-        
-        .camera-error button {
-            margin-top: 15px; background: white; border: none;
-            padding: 8px 16px; border-radius: 8px; font-weight: 600;
+        /* --- New User-Friendly Nav Buttons --- */
+        .btn-nav-user {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @media (max-width: 576px) {
-            .btn-glass span { display: none; }
-            .top-nav { padding: 15px; }
-            .card-scan { padding: 1.5rem; }
+        .btn-nav-user .icon-box {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .btn-nav-user .nav-label {
+            text-align: left;
+            line-height: 1.1;
+        }
+
+        .btn-nav-user .nav-label .title {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .btn-nav-user .nav-label .desc {
+            font-size: 0.65rem;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+
+        /* Hover Effects */
+        .btn-nav-user:hover {
+            background: white;
+            color: var(--primary) !important;
+            transform: translateY(-3px);
+        }
+
+        .btn-nav-user:hover .icon-box {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Variant untuk Admin agar berbeda warna saat hover */
+        .admin-variant:hover {
+            color: #1e293b !important;
+        }
+        .admin-variant:hover .icon-box {
+            background: #1e293b;
+        }
+
+        /* Responsivitas Mobile */
+        @media (max-width: 991px) {
+            .btn-nav-user {
+                padding: 8px 15px;
+                font-size: 0.8rem;
+                font-weight: 600;
+            }
+            .btn-nav-user .icon-box { display: none; }
         }
     </style>
 </head>
 <body>
 
 <nav class="top-nav">
-    <div class="brand-header">
-        <div class="brand-logo"><i class="bi bi-buildings"></i></div>
-        <div>
-            <div class="brand-text">E-IZIN</div>
-            <div style="color: rgba(255,255,255,0.7); font-size: 0.7rem; font-weight: 600;">SMK CB PARE</div>
+    <div class="d-flex align-items-center gap-2">
+        <div style="background: var(--primary); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+            <i class="bi bi-qr-code-scan"></i>
+        </div>
+        <div class="brand-text">
+            E-IZIN 
+            <span class="d-block small opacity-50" style="font-size: 0.6rem;">
+                <span class="d-none d-md-inline">SMK CANDA BHIRAWA PARE</span>
+                <span class="d-inline d-md-none">SMK CB PARE</span>
+            </span>
         </div>
     </div>
-    <div class="d-flex gap-2">
-        <a href="<?= site_url('login-siswa') ?>" class="btn-glass"><i class="bi bi-person"></i> <span>Siswa</span></a>
-        <a href="<?= site_url('login') ?>" class="btn-glass"><i class="bi bi-shield-lock"></i> <span>Admin</span></a>
+    
+    <div class="d-flex gap-3">
+        <a href="<?= site_url('login-siswa') ?>" class="btn-nav-user shadow-sm">
+            <div class="icon-box"><i class="bi bi-person-badge"></i></div>
+            <div class="nav-label d-none d-lg-block">
+                <span class="title">Siswa</span>
+                <span class="desc">Scan Kartu</span>
+            </div>
+            <span class="d-lg-none d-block">Siswa</span>
+        </a>
+
+        <a href="<?= site_url('login') ?>" class="btn-nav-user shadow-sm admin-variant">
+            <div class="icon-box"><i class="bi bi-shield-lock"></i></div>
+            <div class="nav-label d-none d-lg-block">
+                <span class="title">Admin</span>
+                <span class="desc">Panel Kontrol</span>
+            </div>
+            <span class="d-lg-none d-block">Admin</span>
+        </a>
     </div>
 </nav>
 
 <div class="main-container">
-    <div class="card-scan animate__animated animate__zoomIn">
-        <div class="header-section">
-            <h4>E-Izin QR Scan</h4>
-            <p>Pilih status lalu scan kartu siswa</p>
+    <div class="card-scan">
+        <div class="text-center mb-4">
+            <h4 class="fw-bold m-0">Scan Presensi</h4>
+            <p class="text-muted small">Pilih status dan arahkan kode QR ke kamera</p>
         </div>
 
         <form id="scanForm">
@@ -203,72 +268,34 @@
                 </button>
             </div>
 
-            <div class="mb-3">
-                <input type="text" name="keterangan" id="keterangan" 
-                       class="form-control form-control-custom" 
-                       placeholder="Alasan Keluar (Wajib)" required>
-            </div>
+            <input type="text" name="keterangan" id="keterangan" class="form-control form-control-custom mb-3" placeholder="Alasan Keluar (Wajib)" required>
 
             <div class="scanner-wrapper">
                 <div class="scan-line" id="scanLine"></div>
+                <div class="scanner-overlay"></div>
+                
                 <div id="reader"></div>
                 
-                <div class="camera-loading" id="cameraLoading" style="display: none;">
-                    <div class="spinner-border text-primary mb-2"></div>
-                    <span>Menyiapkan Kamera...</span>
-                </div>
-
-                <div class="camera-error" id="cameraError" style="display: none;">
-                    <i class="bi bi-camera-video-off fs-1 mb-2"></i>
-                    <span>Akses Kamera Ditolak</span>
-                    <button type="button" id="retryCamera">Coba Lagi</button>
+                <div class="camera-loading" id="cameraLoading">
+                    <div class="spinner-border spinner-border-sm text-primary mb-2"></div>
+                    <span class="small">Membuka Kamera...</span>
                 </div>
             </div>
 
-            <button type="button" id="switchCamera" class="scanner-btn mt-2">
-                <i class="bi bi-camera-rotate"></i> Ganti Kamera
+            <button type="button" id="switchCamera" class="btn-switch mt-2">
+                <i class="bi bi-camera-rotate me-1"></i> Ganti Kamera
             </button>
         </form>
     </div>
 </div>
 
-<p class="text-center pb-4 text-white-50 small">
-    &copy; <?= date('Y') ?> SMK Canda Bhirawa Pare &bull; rhn.dev
-</p>
-
-<div class="notification" id="notification">
-    <i id="notificationIcon" class="bi"></i>
-    <span id="notificationText"></span>
-</div>
-
 <script>
     const html5QrCode = new Html5Qrcode("reader");
-    const ketInput = document.getElementById('keterangan');
     const statusInput = document.getElementById('status');
-    const cameraLoading = document.getElementById('cameraLoading');
-    const cameraError = document.getElementById('cameraError');
-    
+    const ketInput = document.getElementById('keterangan');
+    const scanLine = document.getElementById('scanLine');
     let isProcessing = false;
     let currentCameraId = null;
-    let cameras = [];
-
-    function showNotification(message, type = 'success') {
-        const notif = document.getElementById('notification');
-        const text = document.getElementById('notificationText');
-        const icon = document.getElementById('notificationIcon');
-        
-        text.textContent = message;
-        notif.className = `notification ${type} show`;
-        
-        const icons = {
-            success: 'bi-check-circle-fill',
-            error: 'bi-x-circle-fill',
-            warning: 'bi-exclamation-triangle-fill'
-        };
-        icon.className = `bi ${icons[type]}`;
-        
-        setTimeout(() => notif.classList.remove('show'), 3000);
-    }
 
     function setStatus(val, btn) {
         document.querySelectorAll('.btn-status').forEach(b => b.classList.remove('active'));
@@ -279,66 +306,60 @@
         ketInput.required = isKeluar;
         ketInput.placeholder = isKeluar ? "Alasan Keluar (Wajib)" : "Kembali (Opsional)";
         
-        const scanLine = document.getElementById('scanLine');
-        scanLine.style.background = isKeluar ? 'var(--danger)' : 'var(--success)';
-        scanLine.style.boxShadow = `0 0 15px ${isKeluar ? 'var(--danger)' : 'var(--success)'}`;
+        // Ubah warna tema scanner
+        const color = isKeluar ? '#ef4444' : '#10b981';
+        scanLine.style.background = color;
+        scanLine.style.boxShadow = `0 0 15px ${color}`;
     }
 
     async function initCamera() {
-        cameraLoading.style.display = 'flex';
-        cameraError.style.display = 'none';
-        
         try {
             const devices = await Html5Qrcode.getCameras();
             if (devices && devices.length > 0) {
-                cameras = devices;
-                // Cari kamera belakang secara otomatis jika ada
+                // Utamakan kamera belakang
                 const backCam = devices.find(d => d.label.toLowerCase().includes('back'));
                 currentCameraId = backCam ? backCam.id : devices[0].id;
                 startScanner(currentCameraId);
-            } else {
-                throw new Error("Kamera tidak ditemukan");
             }
         } catch (err) {
-            cameraError.style.display = 'flex';
-            showNotification("Gagal akses kamera", "error");
-        } finally {
-            cameraLoading.style.display = 'none';
+            Swal.fire('Error', 'Izin kamera ditolak atau tidak ditemukan', 'error');
         }
     }
 
     function startScanner(cameraId) {
+        // Logika QR Box Dinamis (Responsif sesuai layar)
+        let qrBoxSize = (viewfinderWidth, viewfinderHeight) => {
+            let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            return { width: minEdge * 0.7, height: minEdge * 0.7 };
+        };
+
         const config = {
-            fps: 15,
-            qrbox: { width: 250, height: 250 },
-            aspectRatio: 1.0
+            fps: 20,
+            qrbox: qrBoxSize,
+            aspectRatio: 1.0 // Paksa rasio kotak 1:1
         };
 
         html5QrCode.start(cameraId, config, (decodedText) => {
             if (isProcessing) return;
             
             if (statusInput.value === 'keluar' && !ketInput.value.trim()) {
-                showNotification("Alasan wajib diisi!", "warning");
-                ketInput.focus();
+                Swal.fire('Perhatian', 'Alasan keluar wajib diisi!', 'warning');
                 return;
             }
             
-            handleScanSuccess(decodedText);
-        }).catch(err => {
-            console.error(err);
-            cameraError.style.display = 'flex';
+            sendData(decodedText);
+        }).then(() => {
+            document.getElementById('cameraLoading').style.display = 'none';
         });
     }
 
-    async function handleScanSuccess(qrCode) {
+    async function sendData(qrCode) {
         isProcessing = true;
+        
+        // Feedback Getar (hanya Android)
         if ('vibrate' in navigator) navigator.vibrate(100);
 
-        Swal.fire({
-            title: 'Memproses...',
-            didOpen: () => Swal.showLoading(),
-            allowOutsideClick: false
-        });
+        Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
         const formData = new FormData(document.getElementById('scanForm'));
         formData.append('qr_code', qrCode);
@@ -349,45 +370,35 @@
                 body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
+            const res = await response.json();
 
-            const data = await response.json();
-
-            if (data.status === 'success') {
-                Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, timer: 2000, showConfirmButton: false });
+            if (res.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, timer: 2000, showConfirmButton: false });
                 ketInput.value = '';
             } else {
-                Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
+                Swal.fire({ icon: 'error', title: 'Gagal', text: res.message });
             }
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kegagalan sistem' });
+            Swal.fire('Error', 'Gagal terhubung ke server', 'error');
         } finally {
+            // Delay 3 detik agar tidak scan berkali-kali secara tidak sengaja
             setTimeout(() => { isProcessing = false; }, 3000);
         }
     }
 
     document.getElementById('switchCamera').addEventListener('click', async () => {
-        if (cameras.length < 2) return showNotification("Hanya 1 kamera tersedia", "warning");
+        const devices = await Html5Qrcode.getCameras();
+        if (devices.length < 2) return;
         
-        const currentIndex = cameras.findIndex(c => c.id === currentCameraId);
-        const nextIndex = (currentIndex + 1) % cameras.length;
-        currentCameraId = cameras[nextIndex].id;
+        const currentIndex = devices.findIndex(d => d.id === currentCameraId);
+        const nextIndex = (currentIndex + 1) % devices.length;
+        currentCameraId = devices[nextIndex].id;
         
         await html5QrCode.stop();
         startScanner(currentCameraId);
     });
 
-    document.getElementById('retryCamera').addEventListener('click', initCamera);
-
     window.addEventListener('load', initCamera);
-    
-    // Matikan kamera saat pindah tab untuk hemat baterai
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            html5QrCode.stop();
-        } else {
-            if (currentCameraId) startScanner(currentCameraId);
-        }
-    });
 </script>
 
 </body>
