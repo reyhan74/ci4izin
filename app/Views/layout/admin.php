@@ -133,7 +133,7 @@
 
     <aside class="sidebar">
         <a href="<?= site_url('admin/dashboard') ?>" class="sidebar-brand text-decoration-none">
-            <div class="brand-logo-container me-2 text-center bg-white rounded-3 p-1">
+            <div class="brand-logo-container me-2">
                 <img src="<?= base_url('/img/logo.png') ?>" alt="Logo" class="img-fluid" style="height: 30px; width: auto;">
             </div>
             <div class="d-flex flex-column">
