@@ -327,9 +327,17 @@
                 </div>
             </div>
 
-            <button type="button" id="switchCamera" class="btn-switch mt-2">
-                <i class="bi bi-camera-rotate me-1"></i> Ganti Kamera
-            </button>
+            <div class="mt-4">
+                <button type="button" class="btn-switch shadow-sm" id="btnSwitchCamera">
+                    <div class="icon-circle">
+                        <i class="bi bi-camera-rotate"></i>
+                    </div>
+                    <div class="btn-text">
+                        <span class="main-text">Ganti Kamera</span>
+                        <span class="sub-text">Gunakan kamera depan/belakang</span>
+                    </div>
+                </button>
+            </div>
         </form>
     </div>
 </div>
