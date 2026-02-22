@@ -31,158 +31,10 @@
             overflow-x: hidden;
         }
 
-        /* --- Nav --- */
+        /* --- Navigation User Friendly --- */
         .top-nav { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .brand-text { color: white; font-weight: 800; font-size: 1.1rem; line-height: 1.2; }
-        .btn-glass {
-            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); 
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: white; padding: 8px 15px; border-radius: 12px; text-decoration: none;
-        }
-
-        /* --- UI Card --- */
-        .main-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 15px; }
-        .card-scan { 
-            width: 100%; max-width: 450px; background: white; border-radius: 30px; 
-            padding: 2rem 1.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
-        }
-
-        /* --- Modern Switch Camera Button --- */
-        .btn-switch {
-            background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 18px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-align: left;
-        }
         
-        .btn-switch .icon-circle {
-            width: 38px;
-            height: 38px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-switch .btn-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-        }
-        
-        .btn-switch .main-text {
-            font-weight: 700;
-            font-size: 0.95rem;
-            letter-spacing: 0.3px;
-        }
-        
-        .btn-switch .sub-text {
-            font-size: 0.7rem;
-            opacity: 0.7;
-            font-weight: 400;
-        }
-        
-        /* Hover & Active States */
-        .btn-switch:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(30, 41, 59, 0.3);
-            background: linear-gradient(135deg, #334155 0%, #0f172a 100%);
-        }
-        
-        .btn-switch:hover .icon-circle {
-            background: var(--primary); /* Berubah biru saat hover */
-            transform: rotate(180deg);
-        }
-        
-        .btn-switch:active {
-            transform: translateY(-1px);
-        }
-        
-        /* Penyesuaian Mobile */
-        @media (max-width: 576px) {
-            .btn-switch .sub-text {
-                display: none; /* Sembunyikan sub-teks di layar sangat kecil agar ringkas */
-            }
-            .btn-switch {
-                justify-content: center;
-                padding: 12px;
-            }
-        }
-
-        /* --- SCANNER RESPONSIVE ENGINE --- */
-        .scanner-wrapper { 
-            position: relative; 
-            width: 100%;
-            aspect-ratio: 1 / 1; /* Menjaga bentuk kotak sempurna di layar mana pun */
-            background: #000; 
-            border-radius: 24px; 
-            margin: 1.5rem 0; 
-            border: 4px solid #f1f5f9;
-            overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        /* Memaksa video kamera agar memenuhi kotak (Auto-Crop) */
-        #reader { width: 100% !important; height: 100% !important; border: none !important; }
-        #reader video { 
-            width: 100% !important; height: 100% !important; 
-            object-fit: cover !important; /* Kunci utama responsivitas kamera */
-        }
-
-        /* Garis Scan Animasi */
-        .scan-line {
-            position: absolute; width: 100%; height: 3px;
-            background: var(--primary); box-shadow: 0 0 15px var(--primary);
-            top: 0; z-index: 10; animation: scanning 2.5s infinite linear;
-            pointer-events: none;
-        }
-        @keyframes scanning { 0% { top: 0%; } 100% { top: 100%; } }
-
-        /* Overlay Frame (Target Visual) */
-        .scanner-overlay {
-            position: absolute; inset: 0;
-            border: 40px solid rgba(0,0,0,0.3); /* Bingkai transparan */
-            z-index: 5; pointer-events: none;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .scanner-overlay::after {
-            content: ""; width: 100%; height: 100%;
-            border: 2px solid rgba(255,255,255,0.5); border-radius: 8px;
-        }
-
-        /* --- Form Controls --- */
-        .status-selector { background: #f1f5f9; padding: 5px; border-radius: 15px; display: flex; gap: 5px; margin-bottom: 1rem; }
-        .btn-status { 
-            border: none; padding: 10px; border-radius: 10px; flex: 1; 
-            font-weight: 700; font-size: 0.85rem; color: #64748b; background: transparent; transition: 0.3s;
-        }
-        .btn-status.active { background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .btn-status.active[data-status="keluar"] { color: var(--danger); }
-        .btn-status.active[data-status="kembali"] { color: var(--success); }
-
-        .form-control-custom {
-            border-radius: 12px; padding: 12px; border: 2px solid #f1f5f9; font-weight: 600;
-        }
-        .scanner-btn {
-            background: var(--primary); color: white; border: none; padding: 12px; 
-            border-radius: 12px; font-weight: 700; width: 100%;
-        }
-
-        .camera-loading {
-            position: absolute; inset: 0; background: #000; z-index: 20;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
-        }
-        /* --- New User-Friendly Nav Buttons --- */
         .btn-nav-user {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -198,61 +50,110 @@
         }
 
         .btn-nav-user .icon-box {
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             background: rgba(255, 255, 255, 0.15);
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             font-size: 1.1rem;
         }
 
-        .btn-nav-user .nav-label {
-            text-align: left;
-            line-height: 1.1;
-        }
+        .btn-nav-user .nav-label { text-align: left; line-height: 1.1; }
+        .btn-nav-user .nav-label .title { display: block; font-weight: 700; font-size: 0.85rem; }
+        .btn-nav-user .nav-label .desc { font-size: 0.65rem; opacity: 0.7; font-weight: 400; }
 
-        .btn-nav-user .nav-label .title {
-            display: block;
-            font-weight: 700;
-            font-size: 0.85rem;
-        }
-
-        .btn-nav-user .nav-label .desc {
-            font-size: 0.65rem;
-            opacity: 0.7;
-            font-weight: 400;
-        }
-
-        /* Hover Effects */
         .btn-nav-user:hover {
             background: white;
             color: var(--primary) !important;
             transform: translateY(-3px);
         }
 
-        .btn-nav-user:hover .icon-box {
-            background: var(--primary);
-            color: white;
+        .btn-nav-user:hover .icon-box { background: var(--primary); color: white; }
+
+        /* --- UI Card --- */
+        .main-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 15px; }
+        .card-scan { 
+            width: 100%; max-width: 450px; background: white; border-radius: 30px; 
+            padding: 2rem 1.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
         }
 
-        /* Variant untuk Admin agar berbeda warna saat hover */
-        .admin-variant:hover {
-            color: #1e293b !important;
-        }
-        .admin-variant:hover .icon-box {
-            background: #1e293b;
+        /* --- SCANNER RESPONSIVE ENGINE --- */
+        .scanner-wrapper { 
+            position: relative; 
+            width: 100%; aspect-ratio: 1 / 1;
+            background: #000; border-radius: 24px; 
+            margin: 1.5rem 0; border: 4px solid #f1f5f9;
+            overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
 
-        /* Responsivitas Mobile */
+        #reader { width: 100% !important; height: 100% !important; border: none !important; }
+        #reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
+
+        .scan-line {
+            position: absolute; width: 100%; height: 3px;
+            background: var(--primary); box-shadow: 0 0 15px var(--primary);
+            top: 0; z-index: 10; animation: scanning 2.5s infinite linear;
+            pointer-events: none;
+        }
+        @keyframes scanning { 0% { top: 0%; } 100% { top: 100%; } }
+
+        .scanner-overlay {
+            position: absolute; inset: 0;
+            border: 40px solid rgba(0,0,0,0.3);
+            z-index: 5; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .scanner-overlay::after {
+            content: ""; width: 100%; height: 100%;
+            border: 2px solid rgba(255,255,255,0.5); border-radius: 8px;
+        }
+
+        /* --- Modern Switch Camera Button --- */
+        .btn-switch {
+            background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+            color: white; border: none; padding: 10px 20px; border-radius: 18px;
+            width: 100%; display: flex; align-items: center; gap: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-align: left;
+        }
+        
+        .btn-switch .icon-circle {
+            width: 38px; height: 38px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px; display: flex;
+            align-items: center; justify-content: center; font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-switch .btn-text { display: flex; flex-direction: column; line-height: 1.2; }
+        .btn-switch .main-text { font-weight: 700; font-size: 0.95rem; }
+        .btn-switch .sub-text { font-size: 0.7rem; opacity: 0.7; }
+        
+        .btn-switch:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(30, 41, 59, 0.3);
+        }
+        
+        .btn-switch:hover .icon-circle { background: var(--primary); transform: rotate(180deg); }
+
+        /* --- Form Controls --- */
+        .status-selector { background: #f1f5f9; padding: 5px; border-radius: 15px; display: flex; gap: 5px; margin-bottom: 1rem; }
+        .btn-status { 
+            border: none; padding: 10px; border-radius: 10px; flex: 1; 
+            font-weight: 700; font-size: 0.85rem; color: #64748b; background: transparent; transition: 0.3s;
+        }
+        .btn-status.active { background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-status.active[data-status="keluar"] { color: var(--danger); }
+        .btn-status.active[data-status="kembali"] { color: var(--success); }
+
+        .form-control-custom { border-radius: 12px; padding: 12px; border: 2px solid #f1f5f9; font-weight: 600; }
+
+        .camera-loading {
+            position: absolute; inset: 0; background: #000; z-index: 20;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
+        }
+
         @media (max-width: 991px) {
-            .btn-nav-user {
-                padding: 8px 15px;
-                font-size: 0.8rem;
-                font-weight: 600;
-            }
-            .btn-nav-user .icon-box { display: none; }
+            .btn-nav-user .nav-label { display: none; }
+            .btn-nav-user .icon-box { margin: 0; }
         }
     </style>
 </head>
@@ -277,18 +178,16 @@
             <div class="icon-box"><i class="bi bi-person-badge"></i></div>
             <div class="nav-label d-none d-lg-block">
                 <span class="title">Siswa</span>
-                <span class="desc">Scan Kartu</span>
+                <span class="desc">Login Panel</span>
             </div>
-            <span class="d-lg-none d-block">Siswa</span>
         </a>
 
-        <a href="<?= site_url('login') ?>" class="btn-nav-user shadow-sm admin-variant">
+        <a href="<?= site_url('login') ?>" class="btn-nav-user shadow-sm">
             <div class="icon-box"><i class="bi bi-shield-lock"></i></div>
             <div class="nav-label d-none d-lg-block">
                 <span class="title">Admin</span>
                 <span class="desc">Panel Kontrol</span>
             </div>
-            <span class="d-lg-none d-block">Admin</span>
         </a>
     </div>
 </nav>
@@ -318,9 +217,7 @@
             <div class="scanner-wrapper">
                 <div class="scan-line" id="scanLine"></div>
                 <div class="scanner-overlay"></div>
-                
                 <div id="reader"></div>
-                
                 <div class="camera-loading" id="cameraLoading">
                     <div class="spinner-border spinner-border-sm text-primary mb-2"></div>
                     <span class="small">Membuka Kamera...</span>
@@ -354,12 +251,9 @@
         document.querySelectorAll('.btn-status').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         statusInput.value = val;
-        
         const isKeluar = val === 'keluar';
         ketInput.required = isKeluar;
         ketInput.placeholder = isKeluar ? "Alasan Keluar (Wajib)" : "Kembali (Opsional)";
-        
-        // Ubah warna tema scanner
         const color = isKeluar ? '#ef4444' : '#10b981';
         scanLine.style.background = color;
         scanLine.style.boxShadow = `0 0 15px ${color}`;
@@ -369,37 +263,29 @@
         try {
             const devices = await Html5Qrcode.getCameras();
             if (devices && devices.length > 0) {
-                // Utamakan kamera belakang
                 const backCam = devices.find(d => d.label.toLowerCase().includes('back'));
                 currentCameraId = backCam ? backCam.id : devices[0].id;
                 startScanner(currentCameraId);
             }
         } catch (err) {
-            Swal.fire('Error', 'Izin kamera ditolak atau tidak ditemukan', 'error');
+            Swal.fire('Error', 'Izin kamera ditolak', 'error');
         }
     }
 
     function startScanner(cameraId) {
-        // Logika QR Box Dinamis (Responsif sesuai layar)
         let qrBoxSize = (viewfinderWidth, viewfinderHeight) => {
             let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
             return { width: minEdge * 0.7, height: minEdge * 0.7 };
         };
 
-        const config = {
-            fps: 20,
-            qrbox: qrBoxSize,
-            aspectRatio: 1.0 // Paksa rasio kotak 1:1
-        };
+        const config = { fps: 20, qrbox: qrBoxSize, aspectRatio: 1.0 };
 
         html5QrCode.start(cameraId, config, (decodedText) => {
             if (isProcessing) return;
-            
             if (statusInput.value === 'keluar' && !ketInput.value.trim()) {
                 Swal.fire('Perhatian', 'Alasan keluar wajib diisi!', 'warning');
                 return;
             }
-            
             sendData(decodedText);
         }).then(() => {
             document.getElementById('cameraLoading').style.display = 'none';
@@ -408,10 +294,7 @@
 
     async function sendData(qrCode) {
         isProcessing = true;
-        
-        // Feedback Getar (hanya Android)
         if ('vibrate' in navigator) navigator.vibrate(100);
-
         Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
         const formData = new FormData(document.getElementById('scanForm'));
@@ -424,7 +307,6 @@
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             const res = await response.json();
-
             if (res.status === 'success') {
                 Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, timer: 2000, showConfirmButton: false });
                 ketInput.value = '';
@@ -432,21 +314,18 @@
                 Swal.fire({ icon: 'error', title: 'Gagal', text: res.message });
             }
         } catch (err) {
-            Swal.fire('Error', 'Gagal terhubung ke server', 'error');
+            Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
         } finally {
-            // Delay 3 detik agar tidak scan berkali-kali secara tidak sengaja
             setTimeout(() => { isProcessing = false; }, 3000);
         }
     }
 
-    document.getElementById('switchCamera').addEventListener('click', async () => {
+    document.getElementById('btnSwitchCamera').addEventListener('click', async () => {
         const devices = await Html5Qrcode.getCameras();
         if (devices.length < 2) return;
-        
         const currentIndex = devices.findIndex(d => d.id === currentCameraId);
         const nextIndex = (currentIndex + 1) % devices.length;
         currentCameraId = devices[nextIndex].id;
-        
         await html5QrCode.stop();
         startScanner(currentCameraId);
     });
